@@ -1,3 +1,8 @@
+---
+name: check-env-keys
+description: Verify which environment variable keys are present in .env files without exposing their values. Use when you need to check env configuration or compare keys between .env files.
+---
+
 # Check Environment Variable Keys
 
 This skill allows you to verify which environment variable keys are present in .env files WITHOUT exposing their values.
