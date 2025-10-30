@@ -7,11 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.1] - 2025-10-30
 
+### Fixed
+- Updated validation script to match official Claude Code schema (removed engines field support)
+
 ### Added
 - GitHub Actions workflow for automated plugin schema validation
 - Validation script using Zod for schema enforcement with proper field validation
 - CI/CD pipeline to validate plugin.json on PRs and pushes
 - .gitignore for node_modules and bun.lockb
+- Support for optional fields: commands, agents, hooks, mcpServers
 
 ## [1.0.0] - 2025-10-30
 
