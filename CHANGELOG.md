@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - GitHub Actions workflow for automated plugin schema validation
-- Validation script using Zod for schema enforcement
+- Validation script using Zod for schema enforcement with proper field validation
 - CI/CD pipeline to validate plugin.json on PRs and pushes
 - .gitignore for node_modules and bun.lockb
 
