@@ -1,0 +1,13 @@
+{
+  "name": "primitives",
+  "description": "Contains primives for basic Claude Code interactions",
+  "version": "1.0.0",
+  "author": {
+    "name": "Ladislav Martincik",
+    "url": "https://github.com/iamladi"
+  },
+  "license": "MIT",
+  "keywords": [
+    "primitives"
+  ]
+}
