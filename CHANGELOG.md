@@ -5,6 +5,22 @@ All notable changes to the Primitives Plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2025-10-31
+
+### Added
+- Hypothesis-driven debugging methodology to `/debug` command
+- "Form Initial Hypotheses" step requiring 2-4 possibilities before investigation
+- Structured hypothesis testing in debug reports with evidence tracking
+- Hypothesis status markers (✓ Confirmed / ✗ Eliminated / ⚠️ Uncertain)
+- "The Fix" section with immediate action, prevention, and alternatives
+- Senior developer mindset notes: hypothesis formation, systematic elimination
+
+### Changed
+- Renamed "Investigate the Issue" to "Investigate to Test Hypotheses"
+- Renamed "Next Steps" to "The Fix" with more actionable structure
+- Enhanced debug report format to show hypothesis testing process
+- Updated documentation to emphasize evidence-based debugging approach
+
 ## [1.0.2] - 2025-10-30
 
 ### Fixed
