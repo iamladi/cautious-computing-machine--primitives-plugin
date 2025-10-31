@@ -67,24 +67,6 @@ Investigates issues by examining logs, database state, and git history without e
 
 **Requires:** `DEBUG.md` in repo root for project-specific debug info (log locations, database tools, etc.)
 
-### `/generate_branch` - Git Branch Generator
-
-Creates semantic git branch names following your team's format.
-
-**Format:** `<issue_class>-<issue_number>-<adw_id>-<concise_name>`
-
-**Usage:**
-```bash
-/generate_branch feat 123 a1b2c3d4 "add user authentication"
-# Creates: feat-123-a1b2c3d4-add-user-auth
-```
-
-**Features:**
-- Switches to main, pulls latest, creates new branch
-- Enforces 3-6 word concise names
-- All lowercase, hyphen-separated
-- Returns only the branch name
-
 ### `/install` - Dependency Installation
 
 Verifies tooling (git, gh CLI) and guides through dependency installation with health checks.
@@ -183,9 +165,7 @@ primitives-plugin/
 ├── commands/
 │   ├── commit.md            # Smart commit specialist
 │   ├── debug.md             # Debugging assistant
-│   ├── generate_branch.md   # Branch name generator
 │   ├── install.md           # Dependency installer
-│   ├── pr.md                # PR creator
 │   ├── prime.md             # Context primer
 │   ├── start.md             # Dev environment starter
 │   └── tools.md             # Tools lister
