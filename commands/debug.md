@@ -50,9 +50,14 @@ After the user describes the issue:
    - Any uncommitted changes
    - When the issue started occurring
 
-### Step 2: Investigate the Issue
+3. **Form Initial Hypotheses** (2-4 possibilities):
+   - Based on symptoms, what could cause this?
+   - List hypotheses from most to least likely
+   - Note what evidence would confirm/eliminate each
 
-Spawn parallel investigations for efficiency:
+### Step 2: Investigate to Test Hypotheses
+
+Spawn parallel investigations targeting your hypotheses:
 
 **Task 1 - Check Logs**:
 - Find and analyze the most recent logs for errors
@@ -85,7 +90,21 @@ Based on the investigation, present a focused debug report:
 ### What's Wrong
 [Clear statement of the issue based on evidence]
 
-### Evidence Found
+### Hypotheses Tested
+
+**Hypothesis 1**: [Most likely cause]
+- Evidence for: [Supporting findings]
+- Evidence against: [Contradicting findings]
+- **Status**: ✓ Confirmed / ✗ Eliminated / ⚠️ Uncertain
+
+**Hypothesis 2**: [Alternative cause]
+- Evidence for: [Supporting findings]
+- Evidence against: [Contradicting findings]
+- **Status**: ✓ Confirmed / ✗ Eliminated / ⚠️ Uncertain
+
+[More hypotheses as needed...]
+
+### Evidence Collected
 
 **From Logs**:
 - [Error/warning with timestamp]
@@ -100,17 +119,23 @@ Based on the investigation, present a focused debug report:
 - [File state issues]
 
 ### Root Cause
-[Most likely explanation based on evidence]
+[Confirmed explanation based on hypothesis testing]
 
-### Next Steps
+### The Fix
 
-1. **Try This First**:
+1. **Immediate Action**:
    ```bash
-   [Specific command or action]
+   [Specific command or code change]
    ```
+   Why this works: [Brief explanation]
 
-2. **If That Doesn't Work**:
-   - [Alternative approaches]
+2. **Prevent Recurrence**:
+   - [Test to add]
+   - [Code improvement]
+   - [Documentation update]
+
+3. **If That Doesn't Work**:
+   - Hypothesis was wrong, try: [Alternative approaches]
    - [Check project-specific commands in DEBUG.md]
 
 ### Can't Access?
@@ -124,12 +149,16 @@ Would you like me to investigate something specific further?
 
 ## Important Notes
 
+- **Think like a senior dev** - Form hypotheses first, then gather evidence to test them
+- **Test multiple hypotheses** - Don't fixate on one cause; consider 2-4 possibilities
+- **Systematic elimination** - Mark each hypothesis as confirmed/eliminated with evidence
 - **Focus on manual testing scenarios** - This is for debugging during implementation
 - **Always require problem description** - Can't debug without knowing what's wrong
 - **Read files completely** - No limit/offset when reading context
 - **Check DEBUG.md for specifics** - Project-specific log locations, database tools, etc.
 - **Guide back to user** - Some issues (browser console, system internals) are outside reach
 - **No file editing** - Pure investigation only
+- **Document the reasoning** - Show your hypothesis testing process, not just the answer
 
 ## Generic Quick Reference
 
@@ -157,4 +186,4 @@ ps aux | grep [process-name]
 
 **See DEBUG.md in repo root for project-specific commands and tools.**
 
-Remember: This command helps you investigate without burning the primary window's context. Perfect for when you hit an issue during manual testing and need to dig into logs, database, or git state.
+Remember: This command helps you debug systematically like a senior developer—form hypotheses, test them with evidence, eliminate possibilities, and find the root cause. All without burning your primary window's context. Perfect for when you hit an issue during manual testing.
