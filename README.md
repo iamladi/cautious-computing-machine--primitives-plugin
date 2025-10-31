@@ -100,21 +100,6 @@ Verifies tooling (git, gh CLI) and guides through dependency installation with h
 - Reads `INSTALL.md` for project-specific setup
 - Reports missing/incomplete configurations
 
-### `/pr` - Pull Request Creator
-
-Automates GitHub PR creation with proper formatting and context.
-
-**Usage:**
-```bash
-/pr <issue_number>                    # Basic PR
-/pr <issue_number> path/to/plan.md    # PR with implementation plan
-```
-
-**PR format:**
-- Title: `<issue_type>: #<issue_number> - <issue_title>`
-- Body includes: summary, plan link, issue reference, checklist, changes
-- Returns PR URL
-
 ### `/prime` - Context Window Primer
 
 Quickly understands and summarizes codebase structure for efficient context loading.
