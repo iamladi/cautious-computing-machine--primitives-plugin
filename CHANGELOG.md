@@ -21,6 +21,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced debug report format to show hypothesis testing process
 - Updated documentation to emphasize evidence-based debugging approach
 
+### Removed
+- `/pr` command - Moved to `github-plugin` as `/create-pr` for better organization
+  - GitHub-related functionality now consolidated in dedicated github-plugin
+  - Use `/create-pr` from github-plugin instead
+
 ## [1.0.2] - 2025-10-30
 
 ### Fixed
