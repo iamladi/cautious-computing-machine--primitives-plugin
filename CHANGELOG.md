@@ -5,6 +5,16 @@ All notable changes to the Primitives Plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2025-11-16
+
+### Added
+- New `ask-oracle` skill for leveraging GPT-5 Pro / GPT-5.1 reasoning on hard problems
+  - Useful for complex architectural decisions with large codebase context
+  - File attachment and token budget inspection capabilities
+  - Session management for long-running analyses
+  - Comprehensive workflow guidance for effective oracle usage
+  - Examples for debugging, design reviews, and performance analysis
+
 ## [1.1.0] - 2025-10-31
 
 ### Added
