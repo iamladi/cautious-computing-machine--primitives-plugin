@@ -22,6 +22,7 @@ Primitives bundles time-saving workflows for repetitive dev tasks:
 - **Git workflow automation** for branches and PRs
 - **Environment setup** with health checks and missing config detection
 - **Context priming** to quickly understand codebases
+- **Hard problem solving** with GPT-5 Pro/5.1 for architectural and complex debugging tasks
 
 ## Slash Commands
 
@@ -122,6 +123,38 @@ Lists all core, built-in non-MCP development tools available in Claude Code.
 
 ## Skills
 
+### `ask-oracle` - GPT-5 Pro/5.1 Problem Solver
+
+Leverage the Oracle CLI to tap into GPT-5 Pro or GPT-5.1 for hard problems requiring deep reasoning and large codebase context.
+
+**When to use:**
+- Complex architectural decisions needing full project context
+- Hard debugging across large codebases (100k+ LOC)
+- Performance optimization analysis
+- Security reviews with comprehensive code inspection
+- Situations where standard Claude analysis feels insufficient
+
+**Key features:**
+- GPT-5 Pro (default) or GPT-5.1 reasoning models
+- File/directory attachment up to ~196k tokens
+- Token budget inspection before API calls
+- Long-running background sessions with resume capability
+- Progress tracking and session management
+
+**Example usage:**
+```bash
+# Preview files and token cost before calling API
+bunx @steipete/oracle --prompt "Why does this auth fail on mobile?" \
+  --file src/auth/ src/api/ --files-report --preview
+
+# Execute with memorable session slug
+bunx @steipete/oracle --prompt "Review state management architecture" \
+  --file src/store/ --slug "state-arch-review"
+
+# Resume existing session
+bunx @steipete/oracle session state-arch-review
+```
+
 ### `check-env-keys` - Environment Variable Checker
 
 Verifies which environment variable keys are present WITHOUT exposing their values. Security-first approach to env validation.
@@ -170,8 +203,12 @@ primitives-plugin/
 │   ├── start.md             # Dev environment starter
 │   └── tools.md             # Tools lister
 ├── skills/
-│   └── check-env-keys/
-│       └── SKILL.md         # Env variable checker
+│   ├── ask-oracle/
+│   │   └── SKILL.md         # GPT-5 Pro/5.1 problem solver
+│   ├── check-env-keys/
+│   │   └── SKILL.md         # Env variable checker
+│   └── de-slop/
+│       └── SKILL.md         # AI artifact remover
 ├── examples/
 │   ├── commit-workflow.md   # Smart commit example
 │   ├── debug-session.md     # Debugging example
