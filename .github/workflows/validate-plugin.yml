@@ -1,20 +1,10 @@
-name: Validate Plugin & Skills
+name: Validate Plugin
 
 on:
   push:
     branches: [main, master]
-    paths:
-      - '.claude-plugin/plugin.json'
-      - 'skills/**/*'
-      - 'scripts/validate-plugin.ts'
-      - '.github/workflows/validate-plugin.yml'
   pull_request:
     branches: [main, master]
-    paths:
-      - '.claude-plugin/plugin.json'
-      - 'skills/**/*'
-      - 'scripts/validate-plugin.ts'
-      - '.github/workflows/validate-plugin.yml'
 
 jobs:
   validate:
@@ -32,5 +22,5 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Validate plugin.json and skills
+      - name: Validate plugin (versions, schema, skills, docs)
         run: bun run validate
