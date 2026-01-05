@@ -317,6 +317,112 @@ Task(subagent_type="Explore", prompt="TaskId 4: Find database patterns...")
 
 ---
 
+## Core Research Principles (from /research)
+
+These principles are learned from the `/research` command and should guide all research orchestration:
+
+### 1. Read-First-Then-Spawn
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  ALWAYS read mentioned files in main context BEFORE        │
+│  spawning sub-agents. You need context to decompose well.  │
+│                                                             │
+│  WHY:                                                       │
+│  • Better task decomposition with full context             │
+│  • Avoid redundant agent work                               │
+│  • Catch scope issues early                                 │
+│                                                             │
+│  HOW:                                                       │
+│  1. User mentions files → Read them FULLY (no limit/offset)│
+│  2. Understand scope and relevant areas                    │
+│  3. THEN spawn specialized agents for parallel research    │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### 2. Documentarian Mindset
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  Research agents describe what IS, not what SHOULD BE.     │
+│                                                             │
+│  ❌ DON'T:                                                  │
+│  • Suggest improvements or changes                         │
+│  • Perform root cause analysis (unless asked)              │
+│  • Propose future enhancements                             │
+│  • Critique the implementation                             │
+│  • Recommend refactoring or optimization                   │
+│                                                             │
+│  ✅ DO:                                                     │
+│  • Describe what exists                                    │
+│  • Document where it exists (file paths, line numbers)     │
+│  • Explain how it works                                    │
+│  • Map how components interact                             │
+│  • Create a technical map of the system                    │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### 3. Use Specialized Agents (when SDLC available)
+
+When the SDLC plugin is installed, prefer its specialized agents:
+
+| Agent | Purpose |
+|-------|---------|
+| `sdlc:codebase-locator` | Fast component discovery - finds WHERE things are |
+| `sdlc:codebase-analyzer` | Deep implementation analysis - understands HOW things work |
+| `sdlc:codebase-pattern-finder` | Pattern detection - finds similar implementations |
+| `sdlc:web-search-researcher` | External research with Perplexity + source attribution |
+
+### 4. Wait-for-All Synthesis
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  NEVER proceed until ALL sub-agents complete.              │
+│                                                             │
+│  WHY:                                                       │
+│  • Partial results = incomplete understanding             │
+│  • Cross-referencing requires all data                    │
+│  • User expects comprehensive answers                      │
+│                                                             │
+│  HOW:                                                       │
+│  • Spawn agents in parallel (run_in_background=True)       │
+│  • Wait for all notifications                              │
+│  • THEN synthesize into structured output                  │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### 5. Structured Output
+
+Research produces structured docs with:
+- YAML frontmatter (date, git commit, branch, topic, tags)
+- File paths and line numbers for all references
+- Code snippets where relevant
+- Clear sections (Summary, Findings, Architecture, Open Questions)
+
+---
+
+## SDLC Integration
+
+When the `/research` command is available, prefer it over manual orchestration:
+
+```
+# Instead of manually spawning Explore agents:
+Task(subagent_type="Explore", prompt="Find auth patterns...")
+Task(subagent_type="Explore", prompt="Find session handling...")
+
+# Use the /research command:
+Skill(research, args="authentication patterns in the codebase")
+```
+
+The `/research` command automatically:
+1. Decomposes the query into parallel research tasks
+2. Uses specialized SDLC agents (codebase-locator, codebase-analyzer)
+3. Waits for all agents to complete
+4. Synthesizes findings into structured documentation
+5. Saves research to `research/*.md` with proper metadata
+
+---
+
 ```
 ─── ◈ Research ──────────────────────────
 ```

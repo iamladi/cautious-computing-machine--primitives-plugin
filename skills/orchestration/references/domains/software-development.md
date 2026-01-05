@@ -264,6 +264,72 @@ Agents mark tasks resolved immediately upon completion.
 
 ---
 
+## SDLC Plugin Integration
+
+When the SDLC plugin is available, the orchestrator should prefer its commands and agents:
+
+| Phase | SDLC Tool | Fallback (no SDLC) |
+|-------|-----------|---------------------|
+| Research | `/research` or `sdlc:codebase-*` agents | `Explore` agents |
+| Planning | `/plan` | Manual PRD creation with Plan agent |
+| Plan Refinement | `/interview` | AskUserQuestion loops |
+| Implementation | `/implement` | `general-purpose` agents |
+| Code Review | `/review` (Codex + Gemini parallel) | Single review agent |
+| Commit | `/commit` | git commands via agent |
+| Validation | `/verify` | Manual validation steps |
+| Submission | `/submit` | Manual PR creation |
+
+### Why Use SDLC Commands?
+
+1. **Battle-tested patterns**: Commands encode proven workflows
+2. **Parallel execution**: `/review` runs Codex + Gemini in parallel automatically
+3. **GitHub integration**: `/implement` tracks progress via Issue checkboxes
+4. **Quality gates**: `/verify` runs multi-step validation sequence
+5. **Consistency**: Same process every time
+
+### Example: Feature with SDLC
+
+```
+User: "Add user authentication"
+         ↓
+1. `/research "auth patterns in codebase"`
+   → Spawns codebase-locator, codebase-analyzer
+   → Produces research doc with findings
+         ↓
+2. `/plan "Add user authentication"`
+   → Ambiguity detection first (AskUserQuestion)
+   → Creates PRD in plans/*.md
+   → Creates GitHub Issue with phases
+         ↓
+3. `/interview plans/auth.md` (if gaps exist)
+   → Round-by-round questioning
+   → Refines plan with insights
+         ↓
+4. `/implement plans/auth.md`
+   → Phase-by-phase implementation
+   → Feedback loops after each phase
+   → Updates Issue checkboxes
+         ↓
+5. `/review` (after each phase)
+   → Parallel Codex + Gemini
+   → Consolidated P0-P3 findings
+         ↓
+6. `/verify plans/auth.md`
+   → Build → validate → health check
+         ↓
+7. `/submit plans/auth.md`
+   → Commit → PR linked to Issue
+```
+
+### Detection
+
+At orchestration start, check if SDLC is available:
+- If `Skill(research)` works → SDLC is installed
+- Use SDLC commands for matching phases
+- Fall back to generic patterns if not available
+
+---
+
 ```
 ─── ◈ Software Development ─────────────
 ```

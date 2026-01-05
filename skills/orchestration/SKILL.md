@@ -242,6 +242,67 @@ Before anything, sense the vibe:
 
 ---
 
+## 🔌 Available Tools Discovery
+
+Before orchestrating, check what tools are available and use them:
+
+### SDLC Plugin Commands (if installed)
+
+| Command | When to Use | Key Pattern |
+|---------|-------------|-------------|
+| `/research` | Understanding codebase, gathering context | Parallel specialized agents + synthesis |
+| `/plan` | Creating implementation specs | Ambiguity detection → PRD → GitHub Issue |
+| `/interview` | **CRITICAL**: Filling plan gaps, clarifying details | Round-by-round questioning until complete |
+| `/implement` | Executing plan phases | Phase-based + feedback loops + Issue checkbox updates |
+| `/review` | Code review | Parallel Codex + Gemini → consolidated P0-P3 findings |
+| `/verify` | Pre-submission validation | Build → validate → health check → code review |
+| `/submit` | Creating PR | Verify first → commit → PR linked to Issue |
+
+### SDLC Plugin Agents (if installed)
+
+- `sdlc:codebase-locator` - Fast component discovery (prefer over generic Explore)
+- `sdlc:codebase-analyzer` - Deep implementation analysis (describes what IS, not critiques)
+- `sdlc:codebase-pattern-finder` - Find similar implementations with code snippets
+- `sdlc:web-search-researcher` - External research with Perplexity + source attribution
+
+### SDLC Skills (if installed)
+
+- `codex` - GPT-5.1/5.2-Codex for code analysis, refactoring, code review (xhigh reasoning)
+- `gemini` - Gemini 3 Pro for large context (>200k), plan review, code review
+- `interview` - **CRITICAL for plans**: Deep iterative questioning to fill gaps
+
+### Primitives Plugin Tools (always available)
+
+- `/debug` - Parallel debugging investigations (logs, db, git)
+- `/commit` - Atomic commits with intelligent batching by type
+- `/prime` - Quick codebase context loading
+- `/start` - Dev environment startup
+- `ask-oracle` - GPT-5 Pro for hard problems requiring deep reasoning
+- `de-slop` - Pre-commit AI artifact cleanup
+
+### Detection Pattern
+
+When starting orchestration:
+1. Check if Skill tool shows SDLC skills available
+2. If yes → prefer SDLC commands for matching phases
+3. If no → fall back to generic agent patterns
+
+**Example: Feature Development with SDLC**
+
+```
+User: "Add user authentication"
+         ↓
+1. Invoke `/research "auth patterns"` (or spawn codebase-* agents)
+2. Invoke `/plan "Add auth"` (ambiguity detection first)
+3. Invoke `/interview plans/auth.md` (if gaps exist)
+4. Invoke `/implement plans/auth.md` (phase-by-phase)
+5. Invoke `/review` (parallel Codex + Gemini)
+6. Invoke `/verify plans/auth.md` (build → validate → health)
+7. Invoke `/submit plans/auth.md` (commit → PR)
+```
+
+---
+
 ## 📋 Worker Agent Prompt Template
 
 **ALWAYS include this preamble when spawning agents:**
@@ -548,6 +609,225 @@ Task(subagent_type="general-purpose", prompt="...")
 - Update the user on progress
 - Prepare synthesis structure
 - When notifications arrive → process and continue
+
+---
+
+## 📖 Phase Protocols (Learned from SDLC Commands)
+
+When SDLC commands are available, use them. When not, apply these patterns directly:
+
+### Research Phase Protocol (from /research)
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  1. READ-FIRST-THEN-SPAWN                                   │
+│     ALWAYS read mentioned files in main context BEFORE      │
+│     spawning sub-agents. You need context to decompose.     │
+│                                                             │
+│  2. USE SPECIALIZED AGENTS                                  │
+│     • codebase-locator → finds files and components         │
+│     • codebase-analyzer → understands implementation        │
+│     • codebase-pattern-finder → finds similar code          │
+│     • web-search-researcher → external research             │
+│                                                             │
+│  3. DOCUMENTARIAN MINDSET                                   │
+│     Describe what IS, not what SHOULD BE.                   │
+│     No critiques. No suggestions. Just documentation.       │
+│                                                             │
+│  4. WAIT-FOR-ALL SYNTHESIS                                  │
+│     Never proceed until ALL sub-agents complete.            │
+│     Then synthesize into structured output.                 │
+│                                                             │
+│  5. STRUCTURED OUTPUT                                       │
+│     YAML frontmatter + markdown body.                       │
+│     Include file paths, line numbers, code references.      │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Planning Phase Protocol (from /plan)
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  PHASE 0: AMBIGUITY DETECTION FIRST                         │
+│                                                             │
+│  Before ANY planning, use AskUserQuestion to clarify:       │
+│  • Multiple valid architecture approaches?                  │
+│  • Unclear scope boundaries?                                │
+│  • Technology choices with real tradeoffs?                  │
+│  • User intent that could be interpreted differently?       │
+│                                                             │
+│  Only ask questions that meaningfully affect implementation.│
+│  Skip obvious questions (tests? yes. naming? infer).        │
+│                                                             │
+│  COMPLEXITY DECOMPOSITION                                   │
+│                                                             │
+│  High complexity → MUST split into sub-tasks               │
+│  Each sub-task → low-to-medium complexity                  │
+│  Max 5 sub-tasks per high-complexity phase                 │
+│                                                             │
+│  SURGICAL APPROACH                                          │
+│                                                             │
+│  • Minimal changes to fix the task at hand                 │
+│  • Don't fall off track with tangential improvements       │
+│  • Be explicit about scope boundaries                       │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Interview Protocol (from /interview) - CRITICAL FOR PLANS
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  USE INTERVIEW WHEN:                                        │
+│  • Plan has gaps or ambiguities after initial creation     │
+│  • User wants to discuss tradeoffs before implementation   │
+│  • Complex feature needs scope clarification               │
+│  • Uncertainty about architecture or constraints           │
+│                                                             │
+│  ROUND-BY-ROUND APPROACH:                                   │
+│  1. Analyze what you know so far                           │
+│  2. Identify most important ambiguities/unexplored areas   │
+│  3. Ask 1-4 questions using AskUserQuestion                │
+│  4. Process answers                                         │
+│  5. Repeat until user says "done" or all areas covered     │
+│                                                             │
+│  QUESTION QUALITY RULES:                                    │
+│                                                             │
+│  ✅ DO ask about:                                           │
+│  • Implementation tradeoffs ("sync or async?")             │
+│  • Edge cases ("what happens when input is empty?")        │
+│  • Scope boundaries ("is X in scope for v1?")              │
+│  • User preferences ("explicit errors or silent fallbacks?")│
+│  • Architecture choices ("separate service or integrated?")│
+│  • Constraints ("performance requirements?")               │
+│  • Alternatives ("have you considered Y?")                 │
+│                                                             │
+│  ❌ DON'T ask:                                              │
+│  • Obvious things ("do you want tests?")                   │
+│  • Inferrable things ("what language?" when codebase is TS)│
+│  • Yes/no validation ("is this correct?")                  │
+│  • Surface-level stuff ("what's the feature name?")        │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Implementation Phase Protocol (from /implement)
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  1. BRANCH FIRST                                            │
+│     Never implement on main - create feature branch.        │
+│                                                             │
+│  2. READ PLAN FULLY                                         │
+│     Read entire plan, understand all phases.                │
+│                                                             │
+│  3. GITHUB ISSUE INTEGRATION                                │
+│     • Plan file is IMMUTABLE (the spec)                    │
+│     • Progress tracked via Issue checkboxes                │
+│       `gh issue edit #123 --body "..."`                    │
+│     • Never modify plan during implementation              │
+│                                                             │
+│  4. PHASE-BY-PHASE                                          │
+│     • Implement each phase fully before moving to next     │
+│     • Run feedback loops after each phase                  │
+│                                                             │
+│  5. FEEDBACK LOOPS (after each phase)                       │
+│     • Run app as background process                        │
+│     • Run success criteria checks                          │
+│     • Run code review with Codex + Gemini                  │
+│     • Fix issues before proceeding                         │
+│                                                             │
+│  6. MISMATCH HANDLING                                       │
+│     If implementation can't follow plan:                   │
+│     • STOP and present clearly:                            │
+│       "Expected: X, Found: Y, Why this matters: Z"         │
+│     • Mark task as failed, do not continue                 │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Review Phase Protocol (from /review)
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  PARALLEL DUAL-MODEL REVIEW                                 │
+│                                                             │
+│  Spawn BOTH in parallel (single message with both calls):  │
+│  • Codex (gpt-5.2-codex, xhigh reasoning, read-only)       │
+│  • Gemini (gemini-3-pro, yolo mode for background)         │
+│                                                             │
+│  FINDING FORMAT                                             │
+│                                                             │
+│  Priority levels:                                           │
+│  • P0: Critical (security, data loss, crashes)             │
+│  • P1: High (logic errors, significant bugs)               │
+│  • P2: Medium (code quality, maintainability)              │
+│  • P3: Low (style, minor suggestions)                      │
+│                                                             │
+│  Confidence scores: 0.0-1.0                                 │
+│  File + line range references                               │
+│                                                             │
+│  CONSOLIDATION                                              │
+│                                                             │
+│  • Parse findings from both reviewers                      │
+│  • Deduplicate overlapping issues                          │
+│  • Mark consensus items (both flagged = higher confidence) │
+│  • Sort by priority, then confidence                       │
+│                                                             │
+│  WAIT-FOR-ALL                                               │
+│  NEVER consolidate until BOTH reviews complete.            │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Verification Phase Protocol (from /verify)
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  Multi-step verification sequence:                          │
+│                                                             │
+│  1. VERIFY RIGHT THING                                      │
+│     Does implementation match plan intent?                 │
+│                                                             │
+│  2. RUN PRODUCTION BUILD                                    │
+│     Catch build-time errors.                               │
+│     If fails: STOP and report.                             │
+│                                                             │
+│  3. RUN VALIDATION                                          │
+│     `bun run validate` if package.json has it.             │
+│     If fails: STOP and report.                             │
+│                                                             │
+│  4. HEALTH CHECKS                                           │
+│     Run repo health checker.                               │
+│                                                             │
+│  5. CODE REVIEW                                             │
+│     Run Codex + Gemini review (parallel).                  │
+│                                                             │
+│  6. FIX ISSUES                                              │
+│     Address all findings before proceeding.                │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Submission Phase Protocol (from /submit)
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  1. VERIFY FIRST                                            │
+│     Run /verify if not already done in conversation.       │
+│     If fails: STOP.                                        │
+│                                                             │
+│  2. CHECK BRANCH                                            │
+│     Must not be on main.                                   │
+│                                                             │
+│  3. READ GIT STATE                                          │
+│     diff stat, log, changed files                          │
+│                                                             │
+│  4. FINAL VERIFICATION                                      │
+│     Does code implement plan fully?                        │
+│                                                             │
+│  5. COMMIT                                                  │
+│     Use /commit for atomic commits.                        │
+│                                                             │
+│  6. CREATE PR                                               │
+│     Link to Issue and plan file.                           │
+└─────────────────────────────────────────────────────────────┘
+```
 
 ---
 
