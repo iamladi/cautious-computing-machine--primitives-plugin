@@ -5,6 +5,32 @@ All notable changes to the Primitives Plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2026-01-05
+
+### Added
+- SDLC plugin integration in orchestration skill
+- Available Tools Discovery section teaching orchestration to detect and use SDLC commands
+- Phase protocols learned from SDLC commands:
+  - Research Protocol (read-first-then-spawn, specialized agents, documentarian mindset)
+  - Planning Protocol (ambiguity detection first, complexity decomposition)
+  - Interview Protocol (round-by-round questioning, question quality rules)
+  - Implementation Protocol (phase-based, feedback loops, immutable plans)
+  - Review Protocol (parallel Codex + Gemini, P0-P3 priorities, consensus)
+  - Verification Protocol (build → validate → health check sequence)
+  - Submission Protocol (verify first, then commit + PR)
+- SDLC Integration section in software-development.md domain reference
+- Core Research Principles section in research.md domain reference
+
+### Changed
+- Orchestration skill now prefers SDLC commands when available, falls back to generic patterns
+- Domain references updated to include SDLC plugin tooling
+
+## [1.4.0] - 2026-01-05
+
+### Added
+- Auto-load instructions for orchestration skill
+- Users can now configure CLAUDE.md to automatically invoke orchestration mode at session start
+
 ## [1.3.0] - 2025-12-23
 
 ### Added

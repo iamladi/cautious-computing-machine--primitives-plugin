@@ -1,6 +1,6 @@
 {
   "name": "primitives-plugin",
-  "version": "1.3.0",
+  "version": "1.5.0",
   "description": "Essential building blocks for Claude Code workflows",
   "private": true,
   "type": "module",
