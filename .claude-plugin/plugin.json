@@ -1,7 +1,7 @@
 {
   "name": "primitives",
   "description": "Contains primives for basic Claude Code interactions",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "author": {
     "name": "Ladislav Martincik",
     "url": "https://github.com/iamladi"

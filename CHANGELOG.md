@@ -5,6 +5,13 @@ All notable changes to the Primitives Plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.1] - 2026-01-07
+
+### Added
+- `agent-native-architecture` skill imported from compound-engineering-plugin
+  - Prompt-native philosophy for building AI agents where features are prompts, not code
+  - 10 reference documents covering: architecture patterns, MCP tool design, system prompt design, self-modification, refactoring, dynamic context injection, action parity, shared workspace, testing, and mobile patterns
+
 ## [1.6.0] - 2026-01-06
 
 ### Removed
