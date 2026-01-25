@@ -121,6 +121,38 @@ Lists all core, built-in non-MCP development tools available in Claude Code.
 
 **Output:** Bullet list with TypeScript function syntax showing parameters.
 
+### `/worktree` - Isolated Worktree Creator
+
+Creates an isolated git worktree with automatic setup for feature development. Prevents polluting your main checkout while working on new features.
+
+**Features:**
+- Creates worktrees in hidden `.worktrees/` directory
+- Automatically updates `.gitignore`
+- Installs dependencies (reads INSTALL.md)
+- Notes startup instructions (reads RUN.md)
+- Identifies feedback tools (reads FEEDBACK_LOOPS.md)
+- Verifies clean test baseline
+
+**Usage:**
+```bash
+/worktree feat/new-feature    # Create worktree for feature branch
+/worktree fix/bug-123         # Create worktree for bug fix
+```
+
+**Output:**
+```
+Creating worktree for feat/new-feature...
+
+[1/6] Checking .gitignore... already configured
+[2/6] Creating worktree... done
+[3/6] Installing dependencies... bun install complete
+[4/6] Checking RUN.md... found
+[5/6] Checking FEEDBACK_LOOPS.md... found
+[6/6] Running test baseline... 42 tests passed
+
+Worktree ready at .worktrees/feat/new-feature
+```
+
 ## Skills
 
 ### `ask-oracle` - GPT-5 Pro/5.1 Problem Solver
@@ -201,14 +233,17 @@ primitives-plugin/
 │   ├── install.md           # Dependency installer
 │   ├── prime.md             # Context primer
 │   ├── start.md             # Dev environment starter
-│   └── tools.md             # Tools lister
+│   ├── tools.md             # Tools lister
+│   └── worktree.md          # Isolated worktree creator
 ├── skills/
 │   ├── ask-oracle/
 │   │   └── SKILL.md         # GPT-5 Pro/5.1 problem solver
 │   ├── check-env-keys/
 │   │   └── SKILL.md         # Env variable checker
-│   └── de-slop/
-│       └── SKILL.md         # AI artifact remover
+│   ├── de-slop/
+│   │   └── SKILL.md         # AI artifact remover
+│   └── worktree/
+│       └── SKILL.md         # Git worktree with auto-setup
 ├── examples/
 │   ├── commit-workflow.md   # Smart commit example
 │   ├── debug-session.md     # Debugging example
