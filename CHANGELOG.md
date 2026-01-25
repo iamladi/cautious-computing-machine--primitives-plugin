@@ -5,6 +5,21 @@ All notable changes to the Primitives Plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0] - 2026-01-25
+
+### Added
+- `worktree` skill for creating isolated git worktrees with automatic setup
+  - Creates worktrees in hidden `.worktrees/` directory
+  - Automatically ensures `.worktrees/` is gitignored
+  - Executes INSTALL.md for dependency installation
+  - Reads RUN.md for startup instructions (if present)
+  - Reads FEEDBACK_LOOPS.md for verification tools (recommends creating if missing)
+  - Verifies clean test baseline before development
+  - Idempotent: safe to run multiple times
+- `/worktree` command as wrapper for the worktree skill
+  - Usage: `/worktree feat/new-feature` or `/worktree fix/bug-123`
+  - Provides isolated workspace without polluting main checkout
+
 ## [1.6.2] - 2026-01-18
 
 ### Added
