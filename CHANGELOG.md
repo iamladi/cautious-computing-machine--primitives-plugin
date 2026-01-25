@@ -5,6 +5,22 @@ All notable changes to the Primitives Plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.0] - 2026-01-25
+
+### Added
+- `agent-ready-repo-setup` skill for optimizing repositories for AI agent collaboration
+  - Essential patterns for agent-friendly documentation (AGENTS.md, CLAUDE.md)
+  - TypeScript strict mode configuration for better code generation
+  - Vertical slice architecture guidance for improved agent navigation
+  - Structured logging patterns with Pino (JSON output, redaction, correlation IDs)
+  - Machine-parseable test output configuration (Vitest with JUnit XML)
+  - Type-safe environment variables with Zod
+  - Pre-commit hooks setup (Husky + lint-staged)
+  - Claude Code hooks for automated quality enforcement
+  - MCP integration patterns
+  - Comprehensive checklist for new repository setup
+  - Anti-patterns to avoid and verification steps
+
 ## [1.7.0] - 2026-01-25
 
 ### Added
