@@ -9,9 +9,12 @@
     "validate:versions": "bun run scripts/validate-versions.ts",
     "release:patch": "bun run scripts/release.ts patch",
     "release:minor": "bun run scripts/release.ts minor",
-    "release:major": "bun run scripts/release.ts major"
+    "release:major": "bun run scripts/release.ts major",
+    "eval": "bun run eval/run-eval.ts",
+    "eval:baseline": "bun run eval/run-eval.ts --mode structural"
   },
   "devDependencies": {
+    "@anthropic-ai/sdk": "^0.74.0",
     "@types/bun": "latest",
     "zod": "^3.23.8"
   }
