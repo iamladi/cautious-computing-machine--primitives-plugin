@@ -1,10 +1,10 @@
 {
-  "timestamp": "2026-02-07T21:31:19.718Z",
+  "timestamp": "2026-02-07T21:52:34.788Z",
   "mode": "structural",
   "totalCases": 14,
-  "totalAssertions": 61,
-  "passed": 52,
-  "failed": 9,
+  "totalAssertions": 67,
+  "passed": 67,
+  "failed": 0,
   "skipped": 0,
   "estimatedCost": 0,
   "results": [
@@ -13,8 +13,7 @@
       "description": "Agent-ready repo setup covers TypeScript strict and vertical slices",
       "mode": "structural",
       "assertion": "has-priorities-section",
-      "passed": false,
-      "details": "Assertion failed"
+      "passed": true
     },
     {
       "promptFile": "skills/agent-ready-repo-setup/SKILL.md",
@@ -84,8 +83,7 @@
       "description": "Worktree skill creates isolated development environments",
       "mode": "structural",
       "assertion": "has-priorities-section",
-      "passed": false,
-      "details": "Assertion failed"
+      "passed": true
     },
     {
       "promptFile": "skills/worktree/SKILL.md",
@@ -120,8 +118,7 @@
       "description": "Debug command performs hypothesis-driven investigation",
       "mode": "structural",
       "assertion": "has-priorities-section",
-      "passed": false,
-      "details": "Assertion failed"
+      "passed": true
     },
     {
       "promptFile": "commands/debug.md",
@@ -170,8 +167,7 @@
       "description": "De-slop skill removes AI artifacts from changed files",
       "mode": "structural",
       "assertion": "has-priorities-section",
-      "passed": false,
-      "details": "Assertion failed"
+      "passed": true
     },
     {
       "promptFile": "skills/de-slop/SKILL.md",
@@ -227,8 +223,7 @@
       "description": "Agent-native architecture routes to correct reference files",
       "mode": "structural",
       "assertion": "has-priorities-section",
-      "passed": false,
-      "details": "Assertion failed"
+      "passed": true
     },
     {
       "promptFile": "skills/agent-native-architecture/SKILL.md",
@@ -242,8 +237,7 @@
       "description": "Agent-native architecture routes to correct reference files",
       "mode": "structural",
       "assertion": "no-casual-language",
-      "passed": false,
-      "details": "Assertion failed"
+      "passed": true
     },
     {
       "promptFile": "skills/agent-native-architecture/SKILL.md",
@@ -277,6 +271,27 @@
       "promptFile": "commands/install.md",
       "description": "Install command reads INSTALL.md and sets up dependencies",
       "mode": "structural",
+      "assertion": "has-priorities-section",
+      "passed": true
+    },
+    {
+      "promptFile": "commands/install.md",
+      "description": "Install command reads INSTALL.md and sets up dependencies",
+      "mode": "structural",
+      "assertion": "no-important-stacking",
+      "passed": true
+    },
+    {
+      "promptFile": "commands/install.md",
+      "description": "Install command reads INSTALL.md and sets up dependencies",
+      "mode": "structural",
+      "assertion": "no-casual-language",
+      "passed": true
+    },
+    {
+      "promptFile": "commands/install.md",
+      "description": "Install command reads INSTALL.md and sets up dependencies",
+      "mode": "structural",
       "assertion": "mentions-install-md",
       "passed": true
     },
@@ -285,6 +300,27 @@
       "description": "Install command reads INSTALL.md and sets up dependencies",
       "mode": "structural",
       "assertion": "mentions-git-or-gh",
+      "passed": true
+    },
+    {
+      "promptFile": "commands/prime.md",
+      "description": "Prime command reads README and summarizes codebase",
+      "mode": "structural",
+      "assertion": "has-priorities-section",
+      "passed": true
+    },
+    {
+      "promptFile": "commands/prime.md",
+      "description": "Prime command reads README and summarizes codebase",
+      "mode": "structural",
+      "assertion": "no-important-stacking",
+      "passed": true
+    },
+    {
+      "promptFile": "commands/prime.md",
+      "description": "Prime command reads README and summarizes codebase",
+      "mode": "structural",
+      "assertion": "no-casual-language",
       "passed": true
     },
     {
@@ -327,8 +363,7 @@
       "description": "Check env keys skill verifies env vars without exposing values",
       "mode": "structural",
       "assertion": "has-priorities-section",
-      "passed": false,
-      "details": "Assertion failed"
+      "passed": true
     },
     {
       "promptFile": "skills/check-env-keys/SKILL.md",
@@ -355,14 +390,14 @@
       "promptFile": "skills/check-env-keys/SKILL.md",
       "description": "Check env keys skill verifies env vars without exposing values",
       "mode": "structural",
-      "assertion": "mentions-safe-commands",
+      "assertion": "mentions-safe-commands-or-reference-loading",
       "passed": true
     },
     {
       "promptFile": "skills/check-env-keys/SKILL.md",
       "description": "Check env keys skill verifies env vars without exposing values",
       "mode": "structural",
-      "assertion": "no-unsafe-patterns",
+      "assertion": "no-unsafe-patterns-in-code-blocks",
       "passed": true
     },
     {
@@ -370,8 +405,7 @@
       "description": "Ask Oracle skill delegates to GPT-5 Pro for hard problems",
       "mode": "structural",
       "assertion": "has-priorities-section",
-      "passed": false,
-      "details": "Assertion failed"
+      "passed": true
     },
     {
       "promptFile": "skills/ask-oracle/SKILL.md",
@@ -413,8 +447,7 @@
       "description": "Avoid feature creep skill enforces scope boundaries",
       "mode": "structural",
       "assertion": "has-priorities-section",
-      "passed": false,
-      "details": "Assertion failed"
+      "passed": true
     },
     {
       "promptFile": "skills/avoid-feature-creep/SKILL.md",

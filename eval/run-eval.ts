@@ -258,6 +258,10 @@ async function runEval() {
       }
 
       // Run behavioral assertions
+      if ((mode === 'llm' || mode === 'all') && !anthropic && evalCase.behavioral && evalCase.behavioral.length > 0) {
+        console.log(`  Behavioral: skipped (no API key)`)
+        skippedCount++
+      }
       if ((mode === 'llm' || mode === 'all') && anthropic && evalCase.behavioral) {
         // Check spend guard
         if (totalCost >= config.maxSpendPerRun) {

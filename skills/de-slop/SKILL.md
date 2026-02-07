@@ -12,7 +12,7 @@ Precision (only flag real slop) > Coverage (catch all categories) > Speed
 Scan changed files for AI-generated artifacts (redundant comments, AI TODOs, excessive docstrings, unnecessary markdown, mock-heavy tests, fake data) and remove them. Git-only, no GitHub PRs.
 
 ## Constraints
-- Determine comparison base: use `$ARGUMENTS` as base branch, default to main/master
+- Determine comparison base: use `$ARGUMENTS` as base branch; if none provided, detect default branch via `git remote show origin` and fall back to main/master
 - Only scan git-tracked changed files (staged + unstaged vs base branch)
 - Never modify files not changed in current working tree
 - Dry-run first: present numbered list of findings with ±3 lines of context

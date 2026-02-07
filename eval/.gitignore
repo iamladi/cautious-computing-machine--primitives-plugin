@@ -1,2 +1,2 @@
-eval/results/*.json
-!eval/results/baseline/
+results/*.json
+!results/baseline/

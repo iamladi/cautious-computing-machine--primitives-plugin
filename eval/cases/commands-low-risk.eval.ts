@@ -1,10 +1,12 @@
 import type { EvalCase } from '../eval.types.ts'
+import { commonStructural } from '../shared-assertions.ts'
 
-// install.md — will get priorities after rewrite
+// install.md — has priorities after rewrite
 const installEval: EvalCase = {
   promptFile: 'commands/install.md',
   description: 'Install command reads INSTALL.md and sets up dependencies',
   structural: [
+    ...commonStructural(),
     {
       name: 'mentions-install-md',
       test: (content) => /INSTALL\.md/i.test(content)
@@ -16,11 +18,12 @@ const installEval: EvalCase = {
   ],
 }
 
-// prime.md — will get priorities after rewrite
+// prime.md — has priorities after rewrite
 const primeEval: EvalCase = {
   promptFile: 'commands/prime.md',
   description: 'Prime command reads README and summarizes codebase',
   structural: [
+    ...commonStructural(),
     {
       name: 'mentions-readme',
       test: (content) => /README/i.test(content)
