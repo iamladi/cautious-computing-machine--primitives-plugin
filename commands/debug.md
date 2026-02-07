@@ -4,186 +4,22 @@ description: Debug issues by investigating logs, database state, and git history
 
 # Debug
 
-You are tasked with helping debug issues during manual testing or implementation. This command allows you to investigate problems by examining logs, database state, and git history without editing files. Think of this as a way to bootstrap a debugging session without using the primary window's context.
+## Priorities
+Root cause accuracy > Hypothesis breadth > Speed
 
-Before you start initial response, read the `DEBUG.md` file in the repo root to get project-specific debugging information (log locations, database tools, etc.).
+## Goal
+Investigate a reported issue using logs, database state, and git history. Identify root cause through hypothesis-driven debugging. Read-only — no file editing.
 
-## Initial Response
+## Constraints
+- Read `DEBUG.md` in repo root first for project-specific debug info (log locations, database tools)
+- If invoked with a plan/ticket file, read it for context on what's being implemented/tested
+- If invoked without parameters, ask user: what went wrong, what they were doing, when it last worked
+- Form 2-4 hypotheses ranked by likelihood before investigating
+- Spawn parallel investigation tasks: logs, database/backend state, git/file state
+- Mark each hypothesis as confirmed/eliminated/uncertain with evidence
+- Present findings as a structured debug report: what's wrong, hypotheses tested, evidence, root cause, fix, prevention
+- Guide user to browser console or system tools for issues outside agent reach
+- Do not edit files — investigation only
 
-When invoked WITH a plan/ticket file:
-```
-I'll help debug issues with [file name]. Let me understand the current state.
-
-What specific problem are you encountering?
-- What were you trying to test/implement?
-- What went wrong?
-- Any error messages?
-
-I'll investigate the logs, database, and git state to help figure out what's happening.
-```
-
-When invoked WITHOUT parameters:
-```
-I'll help debug your current issue.
-
-Please describe what's going wrong:
-- What are you working on?
-- What specific problem occurred?
-- When did it last work?
-
-I can investigate logs, database state, and recent changes to help identify the issue.
-```
-
-## Process Steps
-
-### Step 1: Understand the Problem
-
-After the user describes the issue:
-
-1. **Read any provided context** (plan or ticket file):
-   - Understand what they're implementing/testing
-   - Note which phase or step they're on
-   - Identify expected vs actual behavior
-
-2. **Quick state check**:
-   - Current git branch and recent commits
-   - Any uncommitted changes
-   - When the issue started occurring
-
-3. **Form Initial Hypotheses** (2-4 possibilities):
-   - Based on symptoms, what could cause this?
-   - List hypotheses from most to least likely
-   - Note what evidence would confirm/eliminate each
-
-### Step 2: Investigate to Test Hypotheses
-
-Spawn parallel investigations targeting your hypotheses:
-
-**Task 1 - Check Logs**:
-- Find and analyze the most recent logs for errors
-- Search for errors, warnings, or issues around the problem timeframe
-- Look for stack traces or repeated errors
-- Return: Key errors/warnings with timestamps
-
-**Task 2 - Database/Backend State**:
-- Use project-specific debug queries (see DEBUG.md)
-- Check recent data and current state
-- Inspect specific documents if you have IDs from logs
-- Look for stuck states, missing relations, or data anomalies
-- Return: Relevant database findings with document IDs and timestamps
-
-**Task 3 - Git and File State**:
-- Check git status and current branch
-- Look at recent commits
-- Check uncommitted changes
-- Verify expected files exist
-- Look for any file permission issues
-- Return: Git state and any file issues
-
-### Step 3: Present Findings
-
-Based on the investigation, present a focused debug report:
-
-```markdown
-## Debug Report
-
-### What's Wrong
-[Clear statement of the issue based on evidence]
-
-### Hypotheses Tested
-
-**Hypothesis 1**: [Most likely cause]
-- Evidence for: [Supporting findings]
-- Evidence against: [Contradicting findings]
-- **Status**: ✓ Confirmed / ✗ Eliminated / ⚠️ Uncertain
-
-**Hypothesis 2**: [Alternative cause]
-- Evidence for: [Supporting findings]
-- Evidence against: [Contradicting findings]
-- **Status**: ✓ Confirmed / ✗ Eliminated / ⚠️ Uncertain
-
-[More hypotheses as needed...]
-
-### Evidence Collected
-
-**From Logs**:
-- [Error/warning with timestamp]
-- [Pattern or repeated issue]
-
-**From Database/Backend**:
-- [Finding from database]
-- [Relevant state or data]
-
-**From Git/Files**:
-- [Recent changes that might be related]
-- [File state issues]
-
-### Root Cause
-[Confirmed explanation based on hypothesis testing]
-
-### The Fix
-
-1. **Immediate Action**:
-   ```bash
-   [Specific command or code change]
-   ```
-   Why this works: [Brief explanation]
-
-2. **Prevent Recurrence**:
-   - [Test to add]
-   - [Code improvement]
-   - [Documentation update]
-
-3. **If That Doesn't Work**:
-   - Hypothesis was wrong, try: [Alternative approaches]
-   - [Check project-specific commands in DEBUG.md]
-
-### Can't Access?
-Some issues might be outside my reach:
-- Browser console errors (F12 in browser)
-- System-level issues
-- [Other project-specific limitations]
-
-Would you like me to investigate something specific further?
-```
-
-## Important Notes
-
-- **Think like a senior dev** - Form hypotheses first, then gather evidence to test them
-- **Test multiple hypotheses** - Don't fixate on one cause; consider 2-4 possibilities
-- **Systematic elimination** - Mark each hypothesis as confirmed/eliminated with evidence
-- **Focus on manual testing scenarios** - This is for debugging during implementation
-- **Always require problem description** - Can't debug without knowing what's wrong
-- **Read files completely** - No limit/offset when reading context
-- **Check DEBUG.md for specifics** - Project-specific log locations, database tools, etc.
-- **Guide back to user** - Some issues (browser console, system internals) are outside reach
-- **No file editing** - Pure investigation only
-- **Document the reasoning** - Show your hypothesis testing process, not just the answer
-
-## Generic Quick Reference
-
-**Git State**:
-```bash
-git status
-git log --oneline -10
-git diff
-```
-
-**File Investigation**:
-```bash
-# Find recent files
-find . -type f -mtime -1
-
-# Check permissions
-ls -la [file]
-```
-
-**Process Management**:
-```bash
-# Check running processes
-ps aux | grep [process-name]
-```
-
-**See DEBUG.md in repo root for project-specific commands and tools.**
-
-Remember: This command helps you debug systematically like a senior developer—form hypotheses, test them with evidence, eliminate possibilities, and find the root cause. All without burning your primary window's context. Perfect for when you hit an issue during manual testing.
+## Output
+Structured debug report with: root cause statement, evidence from logs/database/git, recommended fix with specific commands, prevention steps, and alternative approaches if fix doesn't work.
