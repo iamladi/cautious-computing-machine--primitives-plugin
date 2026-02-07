@@ -17,13 +17,7 @@ Agent navigability > Type safety > Convention consistency
 
 ## Goal
 
-Create repositories where AI agents can work autonomously with minimal guidance. The design choices optimize for agent collaboration patterns: rapid navigation, self-verification, and debugging without visual inspection.
-
-## Problem
-
-AI coding agents face unique challenges compared to human developers. They cannot visually scan a directory tree or quickly skim file contents. They work from textual descriptions and must navigate deliberately through file operations. They generate code they cannot visually inspect for correctness. They need structured, parseable feedback to verify their own work.
-
-Without repository design optimized for these constraints, agents waste context on navigation, generate lower-quality code, struggle to debug, and require excessive human guidance.
+Create repositories where AI agents can work autonomously with minimal guidance. Design choices optimize for agent collaboration: rapid navigation, self-verification, and debugging without visual inspection.
 
 ## Context / Trigger Conditions
 
@@ -39,27 +33,16 @@ Use this skill when:
 
 ### 1. Why Root Documentation Matters
 
-**Agent constraint**: Agents must understand a codebase's conventions before making changes. Unlike humans, they cannot quickly scan multiple files to infer patterns.
+**Principle**: Agents cannot scan files to infer conventions — provide explicit, executable reference at the root.
 
-**Design principle**: Provide explicit, executable reference at the root level.
+**What to document**: Tech stack with versions, build commands, code style, testing requirements.
 
-**What to document**:
-- **Tech stack with versions**: Agents need precise version info to avoid API mismatches. "Next.js" is ambiguous; "Next.js 15.2.1" is actionable.
-- **Build commands**: Agents execute commands without a mental model of the toolchain. `bun run build` vs `npm run build` matters.
-- **Code style conventions**: Explicit rules like "use interfaces for object shapes" prevent style inconsistency that accumulates across agent sessions.
-- **Testing requirements**: "All tests must pass before commit" tells agents when to run tests and how to verify success.
+**AGENTS.md over README.md**: README is explanatory; AGENTS.md is imperative and command-focused.
 
-**Why AGENTS.md/CLAUDE.md over README.md**: README targets humans (explanatory, marketing-focused). AGENTS.md targets agents (imperative, command-focused). Lead with "run this" instead of "this project is..."
-
-**Example pattern**:
+**Example**:
 ```markdown
 ## Build Commands
-```bash
-bun install
-bun run build
-bun run dev
-bun test
-```
+bun install && bun run build && bun run dev && bun test
 
 ## Code Style
 - Use interfaces for object shapes
@@ -67,27 +50,17 @@ bun test
 - Write tests for all public APIs
 ```
 
-**Adaptation judgment**:
-- New TypeScript projects: Create full AGENTS.md with strict conventions
-- Existing repos with established patterns: Document what exists; propose improvements separately
-- Non-TypeScript projects: Adapt structure (e.g., Python projects document type hints with mypy, not TypeScript strict mode)
+**Adaptation**: New projects get full AGENTS.md; existing repos document current state and propose improvements separately.
 
 ### 2. Why Strict Type Systems Help Agents
 
-**Agent constraint**: Agents generate code without visually inspecting it. Type errors that humans catch by looking are invisible to agents until runtime or compile time.
+**Principle**: Agents generate code without visual inspection — shift errors left to compile time for immediate tooling feedback.
 
-**Design principle**: Shift errors left to compile time where agents can detect them through tooling feedback.
+**TypeScript strict mode** catches errors before runtime: `noUncheckedIndexedAccess` forces handling undefined, `exactOptionalPropertyTypes` prevents property bugs, `noImplicitOverride` catches inheritance mistakes.
 
-**TypeScript strict mode** catches entire classes of errors before code runs:
-- `noUncheckedIndexedAccess`: Forces agents to handle undefined when accessing arrays/objects by index
-- `exactOptionalPropertyTypes`: Prevents subtle bugs from `undefined` vs missing properties
-- `noImplicitOverride`: Catches inheritance mistakes in class hierarchies
+**Why this helps agents**: `items[0].name` gets immediate `tsc` feedback requiring `items[0]?.name`, catching bugs without running code.
 
-**Why this matters for agents**: An agent that writes `items[0].name` without checking if `items[0]` exists will produce runtime errors. With `noUncheckedIndexedAccess`, TypeScript forces `items[0]?.name` or explicit length checks. The agent gets immediate feedback from `tsc` without needing to run the code.
-
-**Research evidence**: Studies show agents produce 25% fewer bugs with strict typing compared to permissive configurations. Type signatures act as executable documentation.
-
-**Example configuration** (TypeScript):
+**Example** (TypeScript):
 ```json
 {
   "compilerOptions": {
@@ -99,76 +72,27 @@ bun test
 }
 ```
 
-**Adaptation judgment**:
-- TypeScript projects: Enable strict mode from day one
-- JavaScript projects: Consider migrating to TypeScript, or use JSDoc with `@ts-check` for gradual typing
-- Python projects: Use `mypy --strict` for equivalent benefits
-- Existing repos with loose typing: Incrementally enable stricter checks per module rather than all at once
+**Adaptation**: Enable from day one for new projects; use `mypy --strict` (Python) or JSDoc `@ts-check` (JavaScript); enable per-module for existing repos.
 
 ### 3. Why Architecture Affects Agent Navigation
 
-**Agent constraint**: Agents navigate codebases through file paths and grep operations. They build mental models from file structure, not visual IDE layouts.
+**Principle**: Agents navigate via file paths and grep, building mental models from structure — vertical slices co-locate related code to reduce navigation.
 
-**Two competing patterns**:
+**Layered** (MVC): `src/models/`, `controllers/`, `views/` separate by type
 
-**Layered architecture** (traditional MVC):
-```
-src/
-├── models/
-│   ├── User.ts
-│   ├── Order.ts
-│   └── Product.ts
-├── controllers/
-│   ├── UserController.ts
-│   ├── OrderController.ts
-│   └── ProductController.ts
-└── views/
-    ├── UserView.tsx
-    ├── OrderView.tsx
-    └── ProductView.tsx
-```
+**Vertical slice**: `src/features/checkout/` contains api/, components/, hooks/, types.ts, tests/
 
-**Vertical slice architecture** (feature-based):
-```
-src/
-├── features/
-│   ├── checkout/
-│   │   ├── api/
-│   │   ├── components/
-│   │   ├── hooks/
-│   │   ├── types.ts
-│   │   └── tests/
-│   └── products/
-│       ├── api/
-│       └── components/
-```
+**Why vertical slices help agents**: Co-location reduces navigation, clear feature boundaries, reduced context pollution, tests alongside implementation.
 
-**Why vertical slices help agents**:
-1. **Co-location reduces navigation**: To modify checkout flow, agent reads from `features/checkout/` instead of jumping between `models/Order.ts`, `controllers/OrderController.ts`, `views/OrderView.tsx`
-2. **Clear feature boundaries**: Agent can reason "this change affects checkout" and stay within that directory
-3. **Reduced context pollution**: Agent doesn't need to understand the entire `models/` directory to work on checkout
-4. **Easier testing**: Test files live alongside implementation, not in separate `__tests__/` tree
+**When layered makes sense**: Libraries/frameworks where layers ARE product boundaries.
 
-**When layered architecture makes sense**: Libraries and frameworks where architectural layers ARE the product boundaries (e.g., Express middleware, React component libraries).
-
-**Adaptation judgment**:
-- New projects: Default to vertical slices unless you're building infrastructure
-- Existing layered codebases: Don't rewrite. Add vertical slices incrementally for new features. Document the hybrid pattern in AGENTS.md
-- Small projects (<10 files): Architecture matters less; clarity of naming matters more
+**Adaptation**: Default to vertical slices for new projects; add incrementally in existing layered codebases; architecture matters less in small projects (<10 files).
 
 ### 4. Why Structured Logging Helps Agents Debug
 
-**Agent constraint**: Agents cannot attach debuggers or insert `console.log` and re-run code while observing output. They must diagnose failures from log history.
+**Principle**: Agents diagnose failures from log history, not debuggers — emit machine-parseable JSON with context for post-hoc debugging.
 
-**Design principle**: Emit machine-parseable logs with sufficient context for post-hoc debugging.
-
-**What "structured" means**: JSON output instead of free-form strings. Agents can parse JSON reliably; free-form text requires fragile regex.
-
-**Critical logging patterns**:
-1. **Success AND failure logging**: Agents need to know what worked, not just what failed. "Order processed successfully" confirms the happy path.
-2. **Correlation IDs**: When debugging multi-step flows, agents need to trace a single request across multiple log entries.
-3. **Structured context**: Instead of `"Processing order 123"`, log `{ orderId: "123", operation: "processOrder", status: "started" }`
-4. **Automatic redaction**: Agents might log sensitive data unintentionally. Auto-redaction prevents credential leakage.
+**Critical patterns**: Log success AND failure, correlation IDs for tracing, structured context (`{ orderId, operation, status }`), automatic redaction.
 
 **Example** (Pino for Node.js):
 ```typescript
@@ -177,7 +101,7 @@ import pino from 'pino';
 export const logger = pino({
   level: process.env.LOG_LEVEL || 'info',
   redact: {
-    paths: ['*.password', '*.apiKey', '*.secret'],
+    paths: ['*.password', '*.apiKey', '*.secret', 'req.headers.authorization'],
     censor: '[REDACTED]',
   },
 });
@@ -197,27 +121,17 @@ async function processOrder(orderId: string) {
 }
 ```
 
-**Why this helps agents**: When an agent receives an error report, it can grep logs for `orderId: "123"` and see the full execution timeline. Structured fields like `success: true/false` enable programmatic filtering.
+**Why this helps agents**: Grep by `orderId` for full execution timeline; structured fields enable programmatic filtering.
 
-**Tool examples**: Pino (Node.js), structlog (Python), slog (Go). Choose based on ecosystem, not specific tool requirements.
-
-**Adaptation judgment**:
-- New projects: Set up structured logging from day one
-- Existing projects with console.log: Gradually migrate high-traffic paths first
-- Libraries: Avoid logging directly; expose structured events/hooks for consumers to log
+**Adaptation**: Set up from day one for new projects; migrate high-traffic paths first for existing; libraries expose events/hooks, not logs.
 
 ### 5. Why Machine-Parseable Test Output Matters
 
-**Agent constraint**: Agents verify their work by running tests and parsing results. They cannot visually scan terminal output for red/green indicators.
+**Principle**: Agents verify work by parsing test results, not visually scanning terminal — emit JUnit XML, TAP, or JSON for programmatic parsing.
 
-**Design principle**: Emit test results in a format agents can parse programmatically (JUnit XML, TAP, JSON).
+**Why JUnit XML**: Industry standard; agents extract pass/fail, failure messages, stack traces, test locations.
 
-**Why JUnit XML**: Industry standard supported by all CI systems. Agents can reliably extract:
-- Which tests passed/failed
-- Failure messages and stack traces
-- Test locations (file + line number for debugging)
-
-**Example configuration** (Vitest):
+**Example** (Vitest):
 ```typescript
 export default defineConfig({
   test: {
@@ -228,12 +142,8 @@ export default defineConfig({
 });
 ```
 
-**Why verbose + junit**: `verbose` for human-readable terminal output, `junit` for agent parsing.
-
-**White-box testing pattern**: Export internal functions for agent debugging.
-
+**White-box testing pattern**:
 ```typescript
-// production code
 function parseToken(token: string) { /* ... */ }
 function validateSignature(sig: string) { /* ... */ }
 
@@ -243,25 +153,19 @@ export function authenticate(token: string) {
   return parsed;
 }
 
-// expose internals for testing
 export const __test__ = {
   _parseToken: parseToken,
   _validateSignature: validateSignature,
 };
 ```
 
-**Why this helps agents**: When `authenticate()` fails, agent can write targeted tests for `__test__._parseToken()` to isolate the failure. Humans use debuggers; agents use white-box exports.
+**Why this helps agents**: When `authenticate()` fails, write targeted tests for `__test__._parseToken()` to isolate failure.
 
-**Adaptation judgment**:
-- New projects: Configure machine-parseable output from day one
-- Existing projects: Add reporters alongside existing ones (doesn't break human workflow)
-- Any test framework: Most support JUnit XML (pytest, Jest, Go testing, RSpec)
+**Adaptation**: Configure from day one for new projects; add reporters alongside existing ones (most frameworks support JUnit XML).
 
 ### 6. Why Runtime Validation Helps Agents
 
-**Agent constraint**: Agents trust data shapes they cannot visually verify. Type systems help at compile time, but external data (APIs, user input, env vars) needs runtime validation.
-
-**Design principle**: Fail fast at startup with clear error messages, not at runtime with cryptic failures.
+**Principle**: Agents trust data shapes they cannot verify — fail fast at startup with clear errors, not at runtime with cryptic failures.
 
 **Example** (Zod for environment variables):
 ```typescript
@@ -277,22 +181,13 @@ const envSchema = z.object({
 export const env = envSchema.parse(process.env);  // Crash immediately if invalid
 ```
 
-**Why this helps agents**: If agent forgets to set `DATABASE_URL`, it gets immediate feedback: "Expected string, received undefined at DATABASE_URL". Compare to runtime error: "Connection failed: getaddrinfo ENOTFOUND undefined".
+**Why this helps agents**: Missing `DATABASE_URL` produces clear "Expected string, received undefined" instead of cryptic runtime errors.
 
-**Pattern generalizes**: Validate API responses, user input, file uploads. Explicit validation = clear failure modes.
-
-**Tool examples**: Zod (TypeScript), Pydantic (Python), joi (JavaScript). Choose based on ecosystem.
-
-**Adaptation judgment**:
-- New projects: Validate environment variables at startup
-- Existing projects: Add validation incrementally, starting with critical paths
-- Consider validation overhead: Don't validate every internal function call, focus on boundaries (external input, env vars, API responses)
+**Adaptation**: Validate env vars at startup for new projects; add incrementally for critical paths in existing.
 
 ### 7. Why Pre-commit Hooks Help Agents
 
-**Agent constraint**: Agents might commit code with formatting inconsistencies, linting errors, or test failures if they don't receive immediate feedback.
-
-**Design principle**: Automate quality checks that run before commits reach version control.
+**Principle**: Agents might commit formatting/linting errors without feedback — automate quality checks before commits reach version control.
 
 **Example** (Husky + lint-staged):
 ```json
@@ -305,28 +200,15 @@ export const env = envSchema.parse(process.env);  // Crash immediately if invali
 }
 ```
 
-**Why this helps agents**: Agent writes code, runs `git commit`, hooks auto-format and lint, commit includes fixes. Agent doesn't need to remember to run prettier/eslint separately.
+**Why this helps agents**: Agent runs `git commit`, hooks auto-fix formatting/linting errors.
 
-**Trade-off**: Hooks slow down commits. Balance automation against friction.
-
-**Adaptation judgment**:
-- New projects: Set up hooks from day one
-- Existing projects: Introduce incrementally (start with formatting, add linting later)
-- Agent-specific consideration: Claude Code supports hooks in `.claude/settings.json` for pre/post tool use validation
+**Adaptation**: Set up from day one for new projects; introduce incrementally for existing.
 
 ### 8. Why MCP Integration Extends Agent Capabilities
 
-**Agent constraint**: Agents have limited built-in tools (Read, Write, Edit, Bash, Grep, Glob). External integrations require custom tooling.
+**Principle**: Agents have limited built-in tools — use Model Context Protocol (MCP) to standardize external integrations (docs, databases, APIs, web research).
 
-**Design principle**: Use Model Context Protocol (MCP) to standardize external tool integration.
-
-**Example use cases**:
-- **Context7**: Up-to-date library documentation (agents don't have post-training docs)
-- **Perplexity**: Web research for current information
-- **Database tools**: Query/inspect databases without raw SQL in prompts
-- **API clients**: Interact with external APIs through structured MCP servers
-
-**Example configuration** (`.mcp.json`):
+**Example** (`.mcp.json`):
 ```json
 {
   "mcpServers": {
@@ -338,77 +220,67 @@ export const env = envSchema.parse(process.env);  // Crash immediately if invali
 }
 ```
 
-**Why this helps agents**: Instead of asking "what's the API for React Query v5?", agent queries Context7 MCP server and gets current documentation.
+**Why this helps agents**: Query Context7 for current API docs instead of guessing from training data.
 
-**Adaptation judgment**:
-- New projects: Add MCP servers for critical integrations (docs, databases)
-- Existing projects: Integrate when agents repeatedly struggle with specific information gaps
-- Don't over-engineer: Only add MCP servers that provide clear value
+**Adaptation**: Add for critical integrations (docs, databases) in new projects; integrate when agents struggle with information gaps in existing.
 
 ## Implementation Approach
 
 ### For New Projects
 
 Start with highest-impact items:
-1. **AGENTS.md/CLAUDE.md**: Single highest-impact file. Spend time making it concrete and command-focused.
-2. **Strict typing**: Enable from day one (easier than retrofitting)
-3. **Structured logging**: Set up logger utility before writing business logic
+1. **AGENTS.md/CLAUDE.md**: Highest-impact file. Make it concrete and command-focused.
+2. **Strict typing**: Enable from day one
+3. **Structured logging**: Set up logger utility before business logic
 4. **Test output format**: Configure in test runner setup
-5. **Pre-commit hooks**: Add after initial code is working
+5. **Pre-commit hooks**: Add after initial code works
 
 ### For Existing Projects
 
-Incremental adoption:
-1. **Document first**: Write AGENTS.md describing current state, then propose improvements
-2. **Add typing gradually**: Enable strict mode per-file or per-module
-3. **Migrate logging**: Start with high-traffic paths, expand over time
-4. **Respect existing conventions**: If the team uses different tools (Winston instead of Pino), document those. Don't force tool changes without user agreement.
+Incremental adoption: Document current state in AGENTS.md, then propose improvements. Add typing per-file/module. Migrate logging starting with high-traffic paths. Respect existing tools (Winston vs Pino) — document, don't force changes.
 
 ### For Non-TypeScript Projects
 
-Principles generalize:
-- **Python**: mypy strict mode, Pydantic validation, structlog, pytest with JUnit XML
-- **Go**: Strict compilation (enabled by default), structured logging with slog, table-driven tests
-- **Ruby**: Sorbet for typing, structured logging with semantic_logger, RSpec with JUnit formatter
+**Python**: mypy strict mode, Pydantic, structlog, pytest with JUnit XML
+**Go**: Strict compilation (default), slog, table-driven tests
+**Ruby**: Sorbet, semantic_logger, RSpec with JUnit formatter
 
 ## Verification
 
 After setup, verify:
-1. **Type checking passes**: `bun run typecheck` (or equivalent) runs clean
-2. **Tests produce parseable output**: Confirm JUnit XML or equivalent exists
-3. **Logs are structured**: Run a test operation, verify JSON output with required fields
-4. **Pre-commit hooks work**: Make a deliberate formatting error, attempt commit, verify auto-fix
-5. **Documentation is actionable**: Ask someone unfamiliar with the project to follow AGENTS.md commands
+1. **Type checking passes**: `bun run typecheck` runs clean
+2. **Tests produce parseable output**: Confirm JUnit XML exists
+3. **Logs are structured**: Run test operation, verify JSON output
+4. **Pre-commit hooks work**: Make formatting error, attempt commit, verify auto-fix
 
 ## Anti-Patterns to Avoid
 
-| Anti-Pattern | Why It Hurts Agents | Reasoning-Based Alternative |
-|--------------|---------------------|----------------------------|
-| Deep layered architecture | Forces cross-file navigation that wastes context | Vertical slices co-locate related code for simpler navigation |
-| Missing/loose types | Agents guess incorrectly about data shapes | Strict typing catches errors at compile time when agents can't visually inspect |
-| Scattered features | Hard to understand scope and boundaries | Feature-based organization makes boundaries explicit |
-| Only error logging | Agents can't verify success | Log both success and failure with structured fields |
-| Free-form log strings | Agents can't reliably parse | Structured JSON with correlation IDs for programmatic filtering |
-| Manual pre-commit checks | Agents forget to run them | Automated hooks enforce consistency |
+| Anti-Pattern | Reasoning-Based Alternative |
+|--------------|----------------------------|
+| Deep layered architecture | Vertical slices co-locate related code |
+| Missing/loose types | Strict typing catches errors at compile time |
+| Only error logging | Log success and failure with structured fields |
+| Free-form log strings | Structured JSON with correlation IDs |
+| Manual pre-commit checks | Automated hooks enforce consistency |
 
 ## Edge Cases and Adaptations
 
-**Existing repo with established conventions**: Don't force rewrites. Document current patterns in AGENTS.md, propose improvements separately.
+**Existing conventions**: Document current patterns in AGENTS.md, propose improvements separately.
 
 **Non-TypeScript projects**: Adapt principles (strict typing → mypy/sorbet, Pino → structlog/slog).
 
-**Small projects (<10 files)**: Architecture matters less. Focus on documentation and type safety.
+**Small projects (<10 files)**: Focus on documentation and type safety over architecture.
 
-**Libraries vs applications**: Libraries need different patterns (no logging, more white-box testing, broader type constraints).
+**Libraries vs applications**: Different patterns (no logging, more white-box testing, broader type constraints).
 
-**Team disagreement on tools**: Document what exists. Agents work with Pino or Winston equally well if configuration is clear.
+**Tool disagreement**: Document what exists; agents work with any tool if configuration is clear.
 
 ## Notes
 
-- **Vertical slice architecture**: Research shows agents navigate feature-based organization dramatically better than layered architecture
-- **AGENTS.md adoption**: Over 20,000 repositories now use this pattern; it's the single highest-impact documentation file
-- **Agent-generated code quality**: Studies show 62% of AI-generated code has flaws without strict typing and testing
-- **MCP standardization**: Model Context Protocol is now the de facto standard for agent tool integration
+- **Vertical slice architecture**: Agents navigate feature-based organization significantly better than layered architecture
+- **AGENTS.md adoption**: Widely adopted as the highest-impact documentation file for agent collaboration
+- **Agent-generated code quality**: Strict typing and testing substantially improve code quality
+- **MCP standardization**: Model Context Protocol is the de facto standard for agent tool integration
 
 ## References
 
