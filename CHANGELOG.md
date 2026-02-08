@@ -5,6 +5,17 @@ All notable changes to the Primitives Plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.0] - 2026-02-07
+
+### Added
+- `prompt-as-onboarding` skill — system prompt generator using 8-section annotated template
+- `principal-hierarchy-audit` skill — hierarchy compliance audit with RED/YELLOW/GREEN classification
+
+### Changed
+- Rewrote `commit.md` from step-by-step procedures to reasoning-based workflow (Constitution alignment)
+- Rewrote `agent-ready-repo-setup` from constraint list to 8 reasoning-based principles with examples and adaptation guidance
+- Restored authorization header redaction in Pino logging example
+
 ## [1.8.0] - 2026-01-25
 
 ### Added
