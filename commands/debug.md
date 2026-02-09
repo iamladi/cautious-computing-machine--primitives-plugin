@@ -8,6 +8,20 @@ You are tasked with helping debug issues during manual testing or implementation
 
 Before you start initial response, read the `DEBUG.md` file in the repo root to get project-specific debugging information (log locations, database tools, etc.).
 
+## Argument Parsing
+
+The `$ARGUMENTS` input may contain both the debug context (plan/ticket file path or problem description) and optional mode flags. Extract the intent:
+- Identify if `--swarm` flag is present (indicates user wants parallel team debugging)
+- Separate the flag from the context itself
+- The context is the remaining text after flag extraction
+
+## Mode Selection
+
+**If user requested swarm mode** (via `--swarm` flag): Execute the **Swarm Workflow** below.
+**Otherwise**: Execute the **Standard Workflow** below.
+
+---
+
 ## Initial Response
 
 When invoked WITH a plan/ticket file:
@@ -34,7 +48,138 @@ Please describe what's going wrong:
 I can investigate logs, database state, and recent changes to help identify the issue.
 ```
 
-## Process Steps
+---
+
+## Swarm Workflow
+
+An alternative approach using agent teams for debugging that benefits from parallel hypothesis testing. This works well when investigating multiple potential root causes that can be tested independently.
+
+### Team Prerequisites and Fallback
+
+Attempt to create the agent team using `TeamCreate` with a unique timestamped name: `debug-{YYYYMMDD-HHMMSS}` and description: "Debug: {issue summary}".
+
+If team creation fails (tool unavailable or experimental features disabled), inform the user that swarm mode requires agent teams to be enabled (`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` in settings.json), then fall back to executing the Standard Workflow instead.
+
+### Context Preparation
+
+Before spawning teammates:
+1. Read any provided context (plan or ticket file)
+2. Read the `DEBUG.md` file in the repo root for project-specific debugging information
+3. Get the user's problem description (what's wrong, when it started, error messages)
+4. Form initial hypotheses (2-4 possibilities) based on symptoms
+5. Summarize all context in the teammate spawn prompts so they start with shared understanding
+
+### Shared Task List
+
+Create tasks via `TaskCreate` for each hypothesis investigation. Each task represents testing one potential root cause:
+- Task format: "Investigate hypothesis: {hypothesis description}"
+- Create one task per hypothesis (max 4 tasks)
+- If more than 4 hypotheses, group related ones together
+
+These tasks provide structure for parallel hypothesis testing.
+
+### Teammate Roles and Spawn Protocol
+
+After forming hypotheses in Step 1, spawn teammates to investigate each hypothesis in parallel. Create 1 teammate per hypothesis (max 4; if >4 hypotheses, batch related ones).
+
+Spawn each teammate via the `Task` tool with `team_name` parameter and `subagent_type: "general-purpose"`. Each teammate prompt MUST include as string literals (NOT references to conversation):
+
+**Required Context in Each Spawn Prompt**:
+- The user's problem description (exactly what's wrong, when it started, any error messages)
+- The specific hypothesis this teammate is investigating
+- Complete list of ALL hypotheses being tested by the team
+- Relevant error messages or context from logs/database/git
+- Project-specific debugging information from DEBUG.md
+
+**Teammate Investigation Protocol**:
+
+```
+You are investigating one hypothesis as part of a debug team.
+
+PROBLEM DESCRIPTION:
+{literal copy of user's problem description}
+
+YOUR HYPOTHESIS:
+{specific hypothesis this teammate is testing}
+
+ALL TEAM HYPOTHESES:
+1. {hypothesis 1}
+2. {hypothesis 2}
+3. {hypothesis 3}
+4. {hypothesis 4}
+
+RELEVANT CONTEXT:
+{error messages, log excerpts, database state, recent commits - as string literals}
+
+PROJECT DEBUG INFO:
+{relevant excerpts from DEBUG.md - log locations, database tools, etc.}
+
+YOUR TASK:
+Test your hypothesis by investigating logs, database state, git history, and file state using read-only tools (Read, Grep, Glob, Bash for non-destructive commands like git log, ps, ls).
+
+WORKING CONSTRAINTS:
+You're operating in a parallel investigation team. This means:
+- Read-only access only — don't modify the codebase (git commits, file edits) or run build/test commands, because other teammates are investigating concurrently and modifications would cause conflicts or interference.
+- Communicate through SendMessage only — you cannot interact with the user directly (AskUserQuestion is unavailable in team context). If blocked, send "BLOCKED: {reason}" to the lead.
+- Read files completely without limit/offset so you don't miss relevant context.
+
+EVIDENCE SHARING:
+When you find evidence that contradicts another teammate's hypothesis, immediately share via SendMessage:
+"My investigation of {your hypothesis} found evidence that contradicts {other hypothesis}: {evidence with file:line or log timestamp}"
+
+COMPLETION:
+When you've gathered sufficient evidence to confirm or eliminate your hypothesis:
+1. Mark your task complete via TaskUpdate with your findings
+2. Send "DEBUG COMPLETE" via SendMessage
+3. Wait for shutdown_request
+
+FINDINGS GUIDANCE:
+Report your hypothesis status (confirmed, eliminated, or uncertain) with supporting evidence. Include file:line references or timestamps so the lead can trace your reasoning. If eliminated, explain what this rules out. If confirmed, explain the root cause. Match the depth of your report to the complexity of your findings.
+```
+
+### Completion Protocol
+
+Wait for all teammates to signal completion by sending "DEBUG COMPLETE" messages. Timeout: 10 minutes from teammate spawn time.
+
+**If timeout occurs**: Proceed with available findings and note which teammates timed out in the debug report.
+
+**Fallback behavior**: If a teammate fails or gets stuck (repeated similar messages, no progress), you have three options:
+1. Note the failure and proceed with other teammates' findings
+2. Spawn a replacement teammate with clearer scoped instructions
+3. Handle that hypothesis investigation yourself
+
+Choose based on how critical that hypothesis is to identifying the root cause.
+
+### Synthesis
+
+As team lead, integrate teammate findings into a coherent debug report. Your job is to map findings to hypothesis outcomes, not mechanically merge outputs.
+
+**Hypothesis Attribution**: Mark which teammate(s) tested each hypothesis: `[Teammate 1]`, `[Teammate 2]`, etc. Mark independently confirmed findings `[Consensus]`.
+
+**Output Format**: Use the same Debug Report structure as Step 3 of Standard Workflow:
+- What's Wrong
+- Hypotheses Tested (with teammate attribution and evidence for/against each)
+- Evidence Collected (preserve all file:line refs and timestamps from teammates)
+- Root Cause (based on confirmed hypotheses)
+- The Fix (same structure as standard workflow)
+
+**Cross-hypothesis Evidence**: When one teammate's findings eliminate another hypothesis, highlight this in the report: "Evidence from log investigation contradicted the database state hypothesis, eliminating it as a root cause."
+
+### Resource Cleanup
+
+After completing synthesis (whether successful or failed), always clean up team resources.
+
+Send shutdown requests to all teammates via `SendMessage` with `type: "shutdown_request"`, wait briefly for confirmations, then call `TeamDelete` to remove the team and its task list.
+
+If cleanup itself fails, inform the user: "Team cleanup incomplete. You may need to check for lingering team resources."
+
+Execute cleanup regardless of synthesis outcome—even if earlier steps errored or teammates timed out, cleanup must run before ending.
+
+---
+
+## Standard Workflow
+
+The default debugging approach uses specialized subagents to investigate different aspects of the issue in parallel.
 
 ### Step 1: Understand the Problem
 
