@@ -5,6 +5,18 @@ All notable changes to the Primitives Plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.10.0] - 2026-02-09
+
+### Added
+- Swarm mode support for `/debug` command via `--swarm` flag
+  - Parallel hypothesis testing with agent teams
+  - Team prerequisites and fallback to standard workflow
+  - Context injection for teammates with string literals
+  - Evidence sharing protocol between teammates
+  - Hypothesis attribution in synthesis
+  - Resource cleanup protocol
+  - 10-minute completion timeout with fallback handling
+
 ## [1.9.0] - 2026-02-07
 
 ### Added
