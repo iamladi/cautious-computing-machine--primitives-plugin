@@ -115,13 +115,13 @@ PROJECT DEBUG INFO:
 {relevant excerpts from DEBUG.md - log locations, database tools, etc.}
 
 YOUR TASK:
-Test your hypothesis by investigating logs, database state, git history, and file state. Use ONLY read-only tools (Read, Grep, Glob, Bash for non-destructive commands like git log, ps, ls, find).
+Test your hypothesis by investigating logs, database state, git history, and file state using read-only tools (Read, Grep, Glob, Bash for non-destructive commands like git log, ps, ls).
 
-CRITICAL CONSTRAINTS:
-- DO NOT run git commit/push/add or any destructive commands
-- DO NOT use AskUserQuestion (you can't interact with the user)
-- DO NOT run build or test commands (may interfere with other teammates)
-- Read files completely without limit/offset
+WORKING CONSTRAINTS:
+You're operating in a parallel investigation team. This means:
+- Read-only access only — don't modify the codebase (git commits, file edits) or run build/test commands, because other teammates are investigating concurrently and modifications would cause conflicts or interference.
+- Communicate through SendMessage only — you cannot interact with the user directly (AskUserQuestion is unavailable in team context). If blocked, send "BLOCKED: {reason}" to the lead.
+- Read files completely without limit/offset so you don't miss relevant context.
 
 EVIDENCE SHARING:
 When you find evidence that contradicts another teammate's hypothesis, immediately share via SendMessage:
@@ -133,12 +133,8 @@ When you've gathered sufficient evidence to confirm or eliminate your hypothesis
 2. Send "DEBUG COMPLETE" via SendMessage
 3. Wait for shutdown_request
 
-FINDINGS FORMAT:
-- Hypothesis status: ✓ Confirmed / ✗ Eliminated / ⚠️ Uncertain
-- Evidence for: {specific findings with file:line or timestamps}
-- Evidence against: {contradicting findings}
-- If eliminated: What this rules out
-- If confirmed: Root cause explanation
+FINDINGS GUIDANCE:
+Report your hypothesis status (confirmed, eliminated, or uncertain) with supporting evidence. Include file:line references or timestamps so the lead can trace your reasoning. If eliminated, explain what this rules out. If confirmed, explain the root cause. Match the depth of your report to the complexity of your findings.
 ```
 
 ### Completion Protocol
