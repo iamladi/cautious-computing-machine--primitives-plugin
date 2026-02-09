@@ -6,7 +6,7 @@ description: Debug issues by investigating logs, database state, and git history
 
 You are tasked with helping debug issues during manual testing or implementation. This command allows you to investigate problems by examining logs, database state, and git history without editing files. Think of this as a way to bootstrap a debugging session without using the primary window's context.
 
-Before you start initial response, read the `DEBUG.md` file in the repo root to get project-specific debugging information (log locations, database tools, etc.).
+Before you start the interview, read the `DEBUG.md` file in the repo root to get project-specific debugging information (log locations, database tools, etc.).
 
 ## Argument Parsing
 
@@ -22,31 +22,17 @@ The `$ARGUMENTS` input may contain both the debug context (plan/ticket file path
 
 ---
 
-## Initial Response
+## Interview Checkpoint
 
-When invoked WITH a plan/ticket file:
-```
-I'll help debug issues with [file name]. Let me understand the current state.
+Interview the user about the issue using AskUserQuestion with multiple-choice options. If the user provided an error message or stack trace, analyze it first, then ask targeted follow-up questions.
 
-What specific problem are you encountering?
-- What were you trying to test/implement?
-- What went wrong?
-- Any error messages?
-
-I'll investigate the logs, database, and git state to help figure out what's happening.
-```
-
-When invoked WITHOUT parameters:
-```
-I'll help debug your current issue.
-
-Please describe what's going wrong:
-- What are you working on?
-- What specific problem occurred?
-- When did it last work?
-
-I can investigate logs, database state, and recent changes to help identify the issue.
-```
+Interview protocol:
+- Use AskUserQuestion with multiple-choice options for fast responses
+- Include "(Recommended)" option when you have a strong opinion
+- Ask 1-4 questions per round, loop until user says "done"
+- Focus on: what was happening, what went wrong, when it last worked, error messages, reproduction steps
+- Never ask obvious things answerable by reading the error output
+- Add footer: `Reply format: 1a 2b or defaults`
 
 ---
 
