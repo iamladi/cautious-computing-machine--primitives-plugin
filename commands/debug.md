@@ -8,31 +8,12 @@ You are tasked with helping debug issues during manual testing or implementation
 
 Before you start the interview, read the `DEBUG.md` file in the repo root to get project-specific debugging information (log locations, database tools, etc.).
 
-## Argument Parsing
+## CRITICAL: Route Selection
 
-The `$ARGUMENTS` input may contain both the debug context (plan/ticket file path or problem description) and optional mode flags. Extract the intent:
-- Identify if `--swarm` flag is present (indicates user wants parallel team debugging)
-- Separate the flag from the context itself
-- The context is the remaining text after flag extraction
+BEFORE taking any other action, check `$ARGUMENTS` for the `--swarm` flag:
 
-## Mode Selection
-
-**If user requested swarm mode** (via `--swarm` flag): Execute the **Swarm Workflow** below.
-**Otherwise**: Execute the **Standard Workflow** below.
-
----
-
-## Interview Checkpoint
-
-Interview the user about the issue using AskUserQuestion with multiple-choice options. If the user provided an error message or stack trace, analyze it first, then ask targeted follow-up questions.
-
-Interview protocol:
-- Use AskUserQuestion with multiple-choice options for fast responses
-- Include "(Recommended)" option when you have a strong opinion
-- Ask 1-4 questions per round, loop until user says "done"
-- Focus on: what was happening, what went wrong, when it last worked, error messages, reproduction steps
-- Never ask obvious things answerable by reading the error output
-- Add footer: `Reply format: 1a 2b or defaults`
+1. If `--swarm` IS present: remove it from the arguments, then skip directly to **Swarm Workflow**. Do NOT execute any Standard Workflow steps.
+2. If `--swarm` is NOT present: skip directly to **Standard Workflow**. Do NOT execute any Swarm Workflow steps.
 
 ---
 
@@ -45,6 +26,18 @@ An alternative approach using agent teams for debugging that benefits from paral
 Attempt to create the agent team using `TeamCreate` with a unique timestamped name: `debug-{YYYYMMDD-HHMMSS}` and description: "Debug: {issue summary}".
 
 If team creation fails (tool unavailable or experimental features disabled), inform the user that swarm mode requires agent teams to be enabled (`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` in settings.json), then fall back to executing the Standard Workflow instead.
+
+### Interview Checkpoint
+
+Interview the user about the issue using AskUserQuestion with multiple-choice options. If the user provided an error message or stack trace, analyze it first, then ask targeted follow-up questions.
+
+Interview protocol:
+- Use AskUserQuestion with multiple-choice options for fast responses
+- Include "(Recommended)" option when you have a strong opinion
+- Ask 1-4 questions per round, loop until user says "done"
+- Focus on: what was happening, what went wrong, when it last worked, error messages, reproduction steps
+- Never ask obvious things answerable by reading the error output
+- Add footer: `Reply format: 1a 2b or defaults`
 
 ### Context Preparation
 
@@ -166,6 +159,18 @@ Execute cleanup regardless of synthesis outcome—even if earlier steps errored 
 ## Standard Workflow
 
 The default debugging approach uses specialized subagents to investigate different aspects of the issue in parallel.
+
+### Interview Checkpoint
+
+Interview the user about the issue using AskUserQuestion with multiple-choice options. If the user provided an error message or stack trace, analyze it first, then ask targeted follow-up questions.
+
+Interview protocol:
+- Use AskUserQuestion with multiple-choice options for fast responses
+- Include "(Recommended)" option when you have a strong opinion
+- Ask 1-4 questions per round, loop until user says "done"
+- Focus on: what was happening, what went wrong, when it last worked, error messages, reproduction steps
+- Never ask obvious things answerable by reading the error output
+- Add footer: `Reply format: 1a 2b or defaults`
 
 ### Step 1: Understand the Problem
 

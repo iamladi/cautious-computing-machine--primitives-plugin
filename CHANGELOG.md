@@ -5,6 +5,14 @@ All notable changes to the Primitives Plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.11.1] - 2026-02-10
+
+### Fixed
+
+- **`/debug --swarm` routing** — replaced advisory "Argument Parsing" + "Mode Selection" sections with imperative "CRITICAL: Route Selection" gate that forces immediate branching before any workflow steps execute
+  - Moved Interview Checkpoint into each workflow independently (was floating between gate and workflows, causing LLM to skip routing)
+  - Reordered document: Swarm Workflow now appears before Standard Workflow to prevent top-to-bottom execution bias
+
 ## [1.11.0] - 2026-02-09
 
 ### Changed
