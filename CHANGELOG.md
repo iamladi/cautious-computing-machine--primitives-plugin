@@ -5,6 +5,24 @@ All notable changes to the Primitives Plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.12.0] - 2026-02-28
+
+### Changed
+
+- **`de-slop` skill** — integrated `desloppify` CLI as primary workflow
+  - Runs `uvx desloppify scan` for quantitative "strict score" before/after
+  - Uses `uvx desloppify next` iterative fix loop: directed file-by-file fixes with resolve commands
+  - Follows agent instructions from desloppify output verbatim (no augmentation)
+  - LLM-based pattern detection retained as fallback when desloppify unavailable
+  - Uses `uvx` (UV toolchain) throughout — no pip
+
+### Changed (sdlc-plugin)
+
+- **`/implement` command** — added non-blocking de-slop gate after change walkthrough
+  - Runs `uvx desloppify scan --path .` and reports strict score
+  - Offers "Fix now or later?" when issues found
+  - Skips silently if desloppify unavailable
+
 ## [1.11.1] - 2026-02-10
 
 ### Fixed
