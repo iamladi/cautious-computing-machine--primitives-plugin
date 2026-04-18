@@ -5,6 +5,22 @@ All notable changes to the Primitives Plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.13.0] - 2026-04-18
+
+### Changed
+- `commands/debug.md` rewritten for Opus 4.7 (326 → 175 lines). Stripped `CRITICAL: Route Selection` caps wall and "WORKING CONSTRAINTS" rule-list in favor of reasoned prose; collapsed `Step 1–3` scaffolding into role + hypothesis loop + single cleanup invariant; dropped "think like a senior dev" compensation.
+- `skills/autoresearch/SKILL.md` rewritten for Opus 4.7 (new skill, aligned with the 4.7 principles doc before first release). `Step 1–7` numbered scaffolding replaced with a goal + explicit termination criteria; `Do NOT skip` / `Never stop` / `NEVER STOP` rule-barks replaced with reasoned justification for autonomous runs; `CRITICAL` / `RED` / `YELLOW` caps inlined as severity reasoning; scope made explicit for eval fan-out.
+- `skills/ask-oracle/SKILL.md` surgical pass: `Step 1–6` numbered workflow flattened into prose, preview/execute flow clarified, "Best Practices" rule-list rewritten with inline reasoning, "When NOT to Use" bullet-list reframed.
+- `skills/worktree/SKILL.md` surgical pass: `Step 1–7` labels replaced with action names; error-handling table gained a `Why` column explaining each recovery choice.
+- `skills/principal-hierarchy-audit/SKILL.md` surgical pass: numbered-workflow labels reframed as action names; Detection Patterns rule-list rewritten with inline reasoning so readers can extend the pattern library from first principles rather than keyword-matching.
+- `skills/check-env-keys/SKILL.md` surgical pass: scope stated explicitly (check every source before reporting missing), prose tightened.
+- `skills/avoid-feature-creep/SKILL.md` surgical pass: compensation phrase softened in the AI-agent-directed template.
+- `commands/worktree.md` rewritten (49 → 34 lines) as a clean wrapper around `primitives:worktree` skill with explicit trust-the-tool framing.
+
+### Rationale
+
+Opus 4.7 is more literal, reasons more and earlier, and trends toward fewer tool calls than 4.5/4.6. Scaffolding that nudged earlier models ("think step by step", caps-walls, numbered mandatory sequences) now produces over-triggering or suppressed reasoning on 4.7. Canonical principles captured in `sdlc-plugin/OPUS_4_7_PROMPTING.md`; two of that document's reference templates (`skills/de-slop` and `skills/prompt-as-onboarding`) already live in this plugin. This release aligns the rest.
+
 ## [1.12.0] - 2026-02-28
 
 ### Changed
