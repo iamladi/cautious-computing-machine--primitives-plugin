@@ -3,119 +3,68 @@ name: ask-oracle
 description: This skill should be used when solving hard questions, complex architectural problems, or debugging issues that benefit from GPT-5 Pro or GPT-5.1 thinking models with large file context. Use when standard Claude analysis needs deeper reasoning or extended context windows.
 ---
 
-# Ask Oracle Skill
+# Ask Oracle
 
-Leverage the Oracle CLI to tap into GPT-5 Pro / GPT-5.1 for hard problems that benefit from extended reasoning and large code context.
+## Role
 
-## When to Use
+Delegate hard problems to the Oracle CLI (`bunx @steipete/oracle`), which runs GPT-5 Pro or GPT-5.1 with a large-context window (~196k tokens). Use when standard Claude analysis would under-serve the problem — deep debugging across 100k+ LOC, architectural trade-offs that need whole-system context, performance or security reviews where the bug lives in interactions between files, not in any single file.
 
-Invoke this skill when:
-- Problem requires deep reasoning beyond single-response analysis
-- Debugging complex issues across large codebases (100k+ lines)
-- Architectural decisions need careful evaluation with full context
-- Performance optimization requires comprehensive code analysis
-- Security reviews need thorough codebase inspection
-- Standard Claude analysis feels insufficient
-- Problem statement includes "hard", "complex", "architectural", "across the codebase"
+If the question is answerable with what's already in the conversation, answer directly. Oracle has a real cost (both tokens and wall-clock wait), so reach for it when the extra context genuinely changes the answer.
 
-## Core Capabilities
+## Priorities
 
-The Oracle CLI (`bunx @steipete/oracle`) provides:
-- **GPT-5 Pro** (default): Advanced reasoning for difficult problems
-- **GPT-5.1**: Experimental model with different reasoning approach
-- **File context**: Attach entire directories/files (up to ~196k tokens)
-- **Sessions**: Long-running background sessions with resume capability
-- **Token reporting**: Inspect file token costs before calling API
+Context coverage > Cost awareness > Fast turnaround
+
+## What Oracle provides
+
+- **GPT-5 Pro** (default): advanced reasoning for difficult problems.
+- **GPT-5.1**: experimental model with a different reasoning posture.
+- **File context**: attach directories or individual files, up to ~196k tokens total.
+- **Background sessions**: long-running, resumable — the terminal can close without losing work.
+- **Token reporting**: `--files-report` shows per-file token costs before committing budget.
 
 ## Workflow
 
-### Step 1: Assess the Problem
+### Gather context
 
-Determine if oracle is needed:
-- Is the problem genuinely hard/complex?
-- Does it benefit from seeing more code context?
-- Would standard Claude response be insufficient?
+Pick files and directories that meaningfully change the answer. For every file you attach, ask whether removing it would degrade the response — if no, drop it.
 
-If yes, proceed. If it's a simple question, just answer directly.
+Usually include:
+- Architecture anchors — README, package.json, main entry points.
+- Directly relevant source directories.
+- Config that shapes behavior — tsconfig, build config.
+- Tests that illuminate the problem.
+- Error logs or reproduction scripts.
 
-### Step 2: Gather Relevant Context
+Skip across every attachment set: `node_modules/`, build artifacts (`dist/`, `build/`), vendored code, binaries. These eat token budget for zero signal.
 
-Identify files/directories to attach using `--file`:
-- Architecture files (README, package.json, main entry points)
-- Relevant source directories (`src/`, `lib/`, etc.)
-- Configuration files (tsconfig, build config, etc.)
-- Tests if they illuminate the problem
-- Error logs or reproduction scripts
+### Pick model and preview
 
-Exclude:
-- Node modules (`node_modules/`)
-- Build artifacts (`dist/`, `build/`)
-- Large vendored code
-- Binary files
+Default to GPT-5 Pro. Reach for GPT-5.1 when a problem has stalled on GPT-5 Pro and you want a different reasoning posture.
 
-### Step 3: Choose Model and Preview
+Preview before executing — `--preview` validates the run without calling the API, and `--files-report` shows per-file token costs so you can see where the budget goes. Running both together is the safe default:
 
-**For most hard problems**, use default GPT-5 Pro:
 ```bash
-bunx @steipete/oracle --prompt "Your question here" --file src/ docs/ --preview
+bunx @steipete/oracle --prompt "Your question" --file src/ docs/ --files-report --preview
 ```
 
-**For experimental approach**, try GPT-5.1:
+If the total exceeds ~196k tokens, trim the least-relevant files, narrow directories to specific subpaths, exclude generated code, or tighten the question to need less context. Getting under budget matters — Oracle rejects oversized requests rather than truncating silently.
+
+### Execute
+
+Drop `--preview` to actually call the model. Set a memorable slug so you can reattach later:
+
 ```bash
-bunx @steipete/oracle --prompt "Your question here" --file src/ docs/ --model gpt-5.1 --preview
+bunx @steipete/oracle --prompt "Your question" --file src/ docs/ --slug "my-problem"
 ```
 
-**Always preview first** to check token usage:
+Oracle runs as a background session. The terminal can close.
+
+### Monitor and resume
+
 ```bash
-bunx @steipete/oracle --prompt "Question" --file src/ --files-report --preview
-```
-
-### Step 4: Review Token Report
-
-When using `--files-report`, output shows token costs per file:
-```
-Files Report:
-  src/components/form.tsx: 3,245 tokens
-  src/utils/helpers.ts: 1,023 tokens
-  src/api/client.ts: 2,156 tokens
-  Total: 6,424 tokens (under ~196k budget)
-```
-
-If total exceeds budget:
-- Remove less relevant files
-- Focus on key directories only
-- Exclude verbose files (logs, generated code)
-- Ask a more specific question to reduce needed context
-
-### Step 5: Execute Query
-
-Once satisfied with preview, run without `--preview` to actually call the model:
-```bash
-bunx @steipete/oracle --prompt "Your question here" --file src/ docs/ --slug "my-problem"
-```
-
-Oracle runs as **background session** - terminal can close without losing work.
-
-### Step 6: Monitor or Resume Session
-
-**To attach to running session:**
-```bash
-bunx @steipete/oracle session <session-id>
-```
-
-**To list recent sessions (last 24h):**
-```bash
-bunx @steipete/oracle status
-```
-
-**To specify custom session slug** (easier to remember):
-```bash
-bunx @steipete/oracle --slug "auth-flow-design" --prompt "..." --file src/
-```
-
-Later, attach via slug:
-```bash
-bunx @steipete/oracle session auth-flow-design
+bunx @steipete/oracle status                    # list recent sessions (24h)
+bunx @steipete/oracle session <slug or id>      # reattach
 ```
 
 ## Key Options
@@ -169,16 +118,14 @@ bunx @steipete/oracle \
   --slug "security-audit"
 ```
 
-## Best Practices
+## Practices that actually help
 
-1. **Always preview first**: Use `--preview` or `--files-report` to inspect tokens before committing budget
-2. **Use memorable slugs**: Makes it easier to resume and reference later
-3. **Ask focused questions**: More specific = better reasoning. Avoid "review everything"
-4. **Provide context in prompt**: "We're building X in domain Y, and problem is Z"
-5. **Attach key architecture docs**: READMEs, design docs help oracle understand intent
-6. **Keep files under 1MB**: Automatic rejection, so plan accordingly
-7. **Use browser engine for API-less runs**: Falls back to browser if no OPENAI_API_KEY set
-8. **Check token budget**: ~196k tokens max per request (files + prompt)
+- **Preview before executing.** `--preview` and `--files-report` together cost nothing and show the token budget. Running blind means you only find out about overage after Oracle has already rejected the request.
+- **Ask focused questions.** "Review everything" produces diffuse answers. "Why does the mobile auth flow fail on iOS 17?" produces a trace. Specificity in the prompt → specificity in the response.
+- **Anchor the question in context.** "We're building X in domain Y. Problem is Z." A few sentences of setup beats a longer prompt with no framing.
+- **Attach architecture docs alongside source.** READMEs and design docs let Oracle match the question to the system's intent, not just its code.
+- **Use memorable slugs.** Reattaching to `auth-flow-debug` is easier than hunting through `status` for a hash.
+- **Keep individual files under 1MB.** Oracle rejects anything larger — plan accordingly. Large logs should be pre-filtered to the relevant slice.
 
 ## Examples
 
@@ -242,10 +189,12 @@ bunx @steipete/oracle session my-problem
 - Use `--slug` for easier session management in team workflows
 - Token budget is per-request (~196k combined), not per session
 
-## When NOT to Use Oracle
+## When not to reach for Oracle
 
-- Simple questions answerable in seconds
-- Trivial code changes or minor bugs
-- Context < 10k tokens
-- Answers need immediate turnaround (background sessions take time)
-- No code context needed (use standard Claude instead)
+Skip Oracle when:
+- The question is answerable in seconds from what's already in conversation.
+- The relevant context is under ~10k tokens — no need to pay the large-context premium.
+- You need the answer immediately — background sessions trade latency for depth.
+- There's no code context to attach; at that point Claude with plain reasoning is a better fit.
+
+Reach for Oracle only when the large context window or the extra reasoning depth genuinely changes the answer quality.

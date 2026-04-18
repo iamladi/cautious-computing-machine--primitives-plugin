@@ -62,21 +62,12 @@ Audit the provided system prompt or plugin file against the principal hierarchy 
 
 ## Workflow
 
-### Step 1: Intake
-Accept system prompt or plugin file as `$ARGUMENTS`:
-- Plain text prompt (direct paste)
-- File path to plugin.json, SKILL.md, command.md, or system prompt file
-- Multi-line prompt with frontmatter
+### Intake
 
-If file path provided:
-```bash
-# Read the file
-Read $ARGUMENTS
-```
+`$ARGUMENTS` is either a plain-text prompt (direct paste or multi-line), or a file path to `plugin.json` / `SKILL.md` / `command.md` / a system prompt file. If it's a path, `Read` it; if it's inline text, use it as-is.
 
-If plain text, use as-is.
+### Scan for violations
 
-### Step 2: Scan for Violations
 Analyze each instruction against hierarchy rules (see `references/hierarchy-rules.md`).
 
 #### A. Hard Constraints (RED)
@@ -117,16 +108,12 @@ These are within operator bounds (flag as compliant):
 - Define tool usage patterns ("Check knowledge base first")
 - Expand/restrict user permissions within operator's domain
 
-### Step 3: Classify Each Violation
-For each flagged instruction, determine:
+### Classify each flagged instruction
 
-1. **Severity**: RED (hard override), YELLOW (soft resistance), GREEN (compliant)
-2. **Category**: Hard constraint, operator boundary, user protection, or acceptable
-3. **Hierarchy level violated**: Anthropic, Operator, User, or none
-4. **Constitution reference**: Page number from Anthropic Constitution
-5. **Harm type**: Identity deception, user manipulation, safety risk, etc.
+For every violation, record: severity (RED / YELLOW / GREEN), category (hard constraint / operator boundary / user protection / acceptable), hierarchy level violated (Anthropic / Operator / User / none), Constitution page reference, and the type of harm (identity deception, user manipulation, safety risk, etc.). These five fields together let the operator see both *what* failed and *why* it matters.
 
-### Step 4: Generate Report
+### Generate the report
+
 Structure output with violations, explanations, and alternatives.
 
 **Format:**
@@ -176,12 +163,9 @@ Structure output with violations, explanations, and alternatives.
 3. [Optional improvements for GREEN items]
 ```
 
-### Step 5: Provide Compliant Alternatives
-For each violation, suggest a replacement that:
-- Preserves operator intent where possible
-- Complies with hierarchy boundaries
-- Maintains functionality
-- Explains trade-offs if operator goals conflict with constraints
+### Provide compliant alternatives
+
+For every violation, suggest a replacement that preserves operator intent where possible, complies with hierarchy boundaries, maintains functionality, and explains the trade-off when operator goals conflict with the constraint (some will — say so explicitly rather than producing an alternative that silently drops the operator's goal).
 
 **Example:**
 ```
@@ -244,31 +228,28 @@ All audit rules are codified in `references/hierarchy-rules.md` with Constitutio
 - Default ON (users can turn off): Safety messaging, explanatory detail
 - Default OFF (users can turn on): Step-by-step reasoning, alternative solutions
 
-### Detection Patterns
+### Detection patterns
 
-**RED flag patterns:**
-- "You are [human name]"
-- "You are a human"
-- "Never reveal you're an AI"
-- "Don't tell users you can't do X"
-- "Provide false information about [health/safety/legal]"
-- "Don't warn users about [hazard]"
-- Any CSAM-related content
-- Detailed WMD instructions
+The patterns below are starting points — match on intent, not just literal wording. An operator who writes "You are Maria" while otherwise staying within bounds still triggers RED because the claim itself is what violates the user-truthfulness protection, regardless of surrounding phrasing.
 
-**YELLOW flag patterns:**
-- "Never say you can't do something"
-- "Don't mention [important user-facing detail] unless asked"
-- "Make users believe [false thing]"
-- "Manipulate users into [action]"
-- "Hide [limitation/fee/risk] from users"
+**RED** (hard override — Claude will ignore these):
+- Identity override: "You are [human name]", "You are a human", "Never reveal you're an AI". These conflict with Claude's core identity, which is an inalienable user protection.
+- Capability denial: "Don't tell users you can't do X". Prevents users from routing to the right tool.
+- Safety-critical deception: "Provide false information about [health/safety/legal]", "Don't warn users about [hazard]". Endangers users.
+- Category-banned content: CSAM, detailed WMD instructions. Absolute constraints from Anthropic training.
 
-**GREEN patterns:**
-- "Only discuss [topic scope]"
-- "You are an AI assistant who [persona/role]"
-- "Always respond in [format]"
-- "Use [tool] before [action]"
-- "Be [tone/style]"
+**YELLOW** (soft resistance — Claude may resist or reshape):
+- "Never say you can't do something" — ambiguous between "be confident" (fine) and "hide limitations" (user protection violation); flag for clarification.
+- "Don't mention [important user-facing detail] unless asked" — may hide fees, risks, or limitations the user needs to make informed decisions.
+- "Make users believe [false thing]" — directly violates the no-harmful-deception protection.
+- "Manipulate users into [action]" — dark pattern flagged as user-hostile.
+- "Hide [limitation/fee/risk] from users" — likely violates user protections depending on what's hidden.
+
+**GREEN** (within bounds):
+- Topic scope: "Only discuss [domain]". Operators can restrict what Claude covers as long as the restriction doesn't create safety gaps (e.g. a medical-device assistant *must* still refer to emergency services).
+- Persona and tone: "You are an AI assistant who [role]", "Be [tone/style]". Personality is adjustable; identity isn't.
+- Output format: "Always respond in [format]". Representation, not truth.
+- Tool routing: "Use [tool] before [action]". Behavioral shaping within operator's domain.
 
 ## $ARGUMENTS
 

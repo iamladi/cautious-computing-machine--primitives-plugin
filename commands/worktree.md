@@ -4,7 +4,7 @@ description: Create an isolated git worktree with automatic setup for feature de
 
 # Create Git Worktree
 
-Create an isolated worktree in `.worktrees/` directory with automatic dependency installation and test baseline verification.
+Create an isolated worktree under `.worktrees/` with automatic dependency installation and a test baseline check. Thin wrapper around the `primitives:worktree` skill — delegates to the skill for the actual work.
 
 ## Usage
 
@@ -12,37 +12,25 @@ Create an isolated worktree in `.worktrees/` directory with automatic dependency
 /worktree <branch-name>
 ```
 
-**Examples:**
-- `/worktree feat/new-feature` - Create worktree for new feature
-- `/worktree fix/bug-123` - Create worktree for bug fix
+Examples:
+- `/worktree feat/new-feature`
+- `/worktree fix/bug-123`
 
-## What It Does
+## Behavior
 
-1. Ensures `.worktrees/` is in `.gitignore`
-2. Creates worktree at `.worktrees/<branch-name>`
-3. Installs dependencies (reads INSTALL.md)
-4. Notes startup instructions (reads RUN.md if present)
-5. Identifies feedback tools (reads FEEDBACK_LOOPS.md if present)
-6. Runs test suite to verify clean baseline
+Parse the branch name from `$ARGUMENTS`. If empty, ask the user: `"What branch name should I use for the worktree?"` — no sensible default exists, guessing a branch name is worse than asking.
 
-## Instructions
+Invoke the skill and pass the name through:
 
-Parse the branch name from arguments:
-- `$ARGUMENTS` contains the branch name
-- If empty, ask user: "What branch name should I use for the worktree?"
-
-Invoke the worktree skill:
 ```
 Skill(primitives:worktree, args: "$ARGUMENTS")
 ```
 
-## Error Handling
+Trust the skill's output. If it reports setup failed (e.g., install command erred), surface the error — don't silently succeed.
 
-- No branch name: Prompt user for input
-- Not a git repo: Error with guidance
-- Worktree exists: Report and skip to verification
-- Setup fails: Report issues but continue
+## Error modes
 
-## Output
-
-Report the worktree location and setup status. Include next steps for the user to start development.
+- **No branch name** — prompt before invoking the skill.
+- **Not a git repo** — skill reports; surface the guidance.
+- **Worktree already exists** — skill skips creation and runs verification; that's the right behavior.
+- **Setup partially fails** — skill continues; surface what failed so the user can finish manually.

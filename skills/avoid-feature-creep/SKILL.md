@@ -132,13 +132,9 @@ Saying no to features is a skill. Here are templates:
 > "Is this scratching my own itch or solving a real user problem? Would I bet the release date on this?"
 
 **To AI agents (Claude, Opus, Codex, Ralph, Cursor):**
-> "Stop. Before we add this feature, answer: Does this solve the core user problem we defined at the start of this session? If not, add it to a DEFERRED.md file and stay focused on the current scope."
+> "Before adding this feature: does it solve the core user problem we defined at the start of this session? If not, log it in `DEFERRED.md` and stay on the current scope."
 
-When working with AI coding agents:
-- State your scope constraints at the start of every session
-- Agents will suggest improvements. Most are out of scope.
-- Treat agent suggestions like stakeholder requests: apply the 48-hour rule
-- If an agent keeps pushing a feature, ask "Why?" three times to find the real need
+When working with AI coding agents, treat their suggestions like stakeholder requests — scope constraints stated at the start of every session set the frame, and the 48-hour rule applies to agent suggestions too. If an agent keeps pushing a feature, ask "why?" three times to surface the actual need vs. pattern-matched improvement.
 
 ## AI-Specific Guidelines
 
