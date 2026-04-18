@@ -5,25 +5,15 @@ description: Create an isolated git worktree for feature development with automa
 
 # Git Worktree Skill
 
-Create isolated worktrees in `.worktrees/` directory with automatic project setup and test baseline verification.
+Create an isolated worktree under `.worktrees/`, install dependencies, and verify a test baseline. The point is to give the user a fresh, fully-configured workspace without polluting the main checkout — which matters when running multiple parallel feature branches or when the main checkout has in-progress changes you don't want to disturb.
 
-## When to Use
+## Input
 
-- Starting work on a new feature that needs isolation from main checkout
-- Need a clean workspace without affecting current working directory
-- Want automatic dependency installation and environment setup
-- Part of SDLC workflow that requires isolated implementation context
-
-## Arguments
-
-The skill expects a branch name argument:
-- `$ARGUMENTS` - Branch name for the worktree (e.g., `feat/my-feature`, `fix/bug-123`)
-
-If no branch name provided, prompt the user to specify one.
+`$ARGUMENTS` is the branch name (e.g. `feat/my-feature`, `fix/bug-123`). If missing, prompt the user — guessing a branch name is worse than asking.
 
 ## Workflow
 
-### Step 1: Validate Environment
+### Validate the environment
 
 ```bash
 # Check git version supports worktrees (2.5+)
@@ -35,7 +25,7 @@ git rev-parse --git-dir
 
 If not in a git repo, stop with error: "Not a git repository. Run this from a project root."
 
-### Step 2: Ensure .worktrees/ is Gitignored
+### Ensure `.worktrees/` is gitignored
 
 Check if `.worktrees/` is in `.gitignore`:
 
@@ -55,7 +45,7 @@ git commit -m "chore: add .worktrees to gitignore"
 
 Report: `".worktrees/" added to .gitignore and committed`
 
-### Step 3: Check for Existing Worktree
+### Check for an existing worktree
 
 ```bash
 # List existing worktrees
@@ -69,7 +59,7 @@ ls -d .worktrees/$BRANCH_NAME 2>/dev/null && echo "exists" || echo "new"
 - Report: "Worktree already exists at .worktrees/$BRANCH_NAME"
 - Skip creation, proceed to verification steps (Step 6)
 
-### Step 4: Create Worktree
+### Create the worktree
 
 ```bash
 # Create the worktree with a new branch
@@ -85,15 +75,15 @@ Handle errors:
 
 Report: "Created worktree at .worktrees/$BRANCH_NAME"
 
-### Step 5: Execute Setup Files
+### Run the setup files
 
-Change to worktree directory and execute setup files in order:
+Change into the worktree and run whatever project-level setup the repo defines. The order matters — install deps first so subsequent steps have a working environment.
 
 ```bash
 cd .worktrees/$BRANCH_NAME
 ```
 
-#### 5a. INSTALL.md (Required)
+#### INSTALL.md (required)
 
 Check for `INSTALL.md`:
 ```bash
@@ -113,7 +103,7 @@ ls INSTALL.md 2>/dev/null && echo "found" || echo "missing"
   3. `yarn install` (if yarn.lock exists)
 - If none work, report: "Could not auto-detect package manager. Manual setup may be required."
 
-#### 5b. RUN.md (Optional)
+#### RUN.md (optional)
 
 Check for `RUN.md`:
 ```bash
@@ -129,7 +119,7 @@ ls RUN.md 2>/dev/null && echo "found" || echo "missing"
 - No action needed
 - Report: "No RUN.md found (optional)"
 
-#### 5c. FEEDBACK_LOOPS.md (Optional but Recommended)
+#### FEEDBACK_LOOPS.md (optional, recommended)
 
 Check for `FEEDBACK_LOOPS.md`:
 ```bash
@@ -152,9 +142,9 @@ ls FEEDBACK_LOOPS.md 2>/dev/null && echo "found" || echo "missing"
   - Build verification (e.g., bun run build)
   ```
 
-### Step 6: Verify Test Baseline
+### Verify the test baseline
 
-Run test suite to establish clean baseline:
+Run the test suite once before handing the workspace to the user. The reason this matters is diagnostic: if a test fails later, they need to know whether they introduced the failure or inherited it.
 
 ```bash
 # Detect and run tests
@@ -175,7 +165,7 @@ fi
 **If no tests:**
 - Note: "No test suite detected."
 
-### Step 7: Final Report
+### Final report
 
 ```
 Worktree Setup Complete
@@ -207,16 +197,16 @@ This skill is safe to run multiple times:
 - Setup files can be re-executed
 - Test baseline always runs for verification
 
-## Error Handling
+## Error handling
 
-| Error | Action |
-|-------|--------|
-| Not a git repo | Stop with clear error |
-| Git version < 2.5 | Stop with upgrade instructions |
-| Branch already exists (not worktree) | Use existing branch |
-| Worktree path exists but stale | Prune and retry |
-| INSTALL.md fails | Report error, continue to tests |
-| Tests fail | Warn but allow proceeding |
+| Error | Action | Why |
+|-------|--------|-----|
+| Not a git repo | Stop with clear error | Nothing to branch from — pointless to continue |
+| Git version < 2.5 | Stop with upgrade instructions | Worktrees are a 2.5+ feature |
+| Branch already exists (not as a worktree) | Reuse the branch, attach it to a new worktree path | User probably wants to continue prior work |
+| Worktree path exists but stale | `git worktree prune`, then retry | Stale registrations block `git worktree add` |
+| INSTALL.md fails | Report the error, continue to the test step | Partial setup beats no setup — the user can finish install manually |
+| Tests fail | Warn, but allow proceeding | Failures may predate the user's work; they need to decide |
 
 ## Integration with SDLC
 
