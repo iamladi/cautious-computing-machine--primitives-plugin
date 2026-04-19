@@ -5,6 +5,31 @@ All notable changes to the Primitives Plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.14.0] - 2026-04-19
+
+### Added
+- `skills/karpathy-principles/SKILL.md` (69L) — new skill collecting the four Karpathy coding-with-AI principles (Think Before Coding, Simplicity First, Surgical Changes, Goal-Driven Execution) with cross-links to the local skills that enforce each. Trigger description narrowed to rails-loading phrases ("the rails", "surface assumptions", "simplicity first", "surgical changes", "define verifiable success") to avoid collision with `interview` / `avoid-feature-creep` / `de-slop`.
+- `skills/karpathy-principles/ATTRIBUTION.md` — commit-pinned permalinks to upstream `multica-ai/andrej-karpathy-skills` (MIT, no `LICENSE` file in repo; declared MIT in upstream `README.md`).
+- `references/skill-authoring-conventions.md` (197L) — workspace-local convention doc covering SKILL.md size guidance, frontmatter minimum, the `EXAMPLES.md` extraction convention, the `❌/✅` paired-block format (prose pairs allowed), and the "why this skill exists" preamble pattern. Referenced from `README.md` Contributing section and from `skills/karpathy-principles/SKILL.md`.
+- `skills/de-slop/EXAMPLES.md` (97L) — extracted illustrative ❌/✅ code pairs for scan categories B (Redundant Comments), C (AI TODO), and D (Excessive Docstrings).
+- `skills/avoid-feature-creep/EXAMPLES.md` (82L) — extracted templates: MVP Scope Document Template, Scope Decision Log table, Daily AI Check Template.
+- `skills/agent-native-architecture/EXAMPLES.md` (234L) — extracted 11 anti-pattern walkthroughs as paired ❌/✅ blocks: cardinal sin, artificial limits, encoded decisions, over-specification, context starvation, orphan features, sandbox isolation, silent actions, capability hiding, static tool mapping, incomplete CRUD.
+
+### Changed
+- `skills/de-slop/SKILL.md` (308 → 263L) — extracted illustrative example pairs for categories B/C/D to `EXAMPLES.md`. Detection heuristics, Present Findings format, and Summary Report retained as normative workflow + required output. Added "why this skill exists" preamble naming Simplicity First. Plan target ≤220L was over-optimistic given strict FR-2 classification — required-output formats blocked further extraction.
+- `skills/avoid-feature-creep/SKILL.md` (304 → 265L) — extracted three templates to `EXAMPLES.md`. Decision Framework, Saying-No scripts, Recovery playbook, Backlog Hygiene framework retained as normative workflow + required output. Plan target ≤140L was over-optimistic given how much of this skill is normative.
+- `skills/agent-native-architecture/SKILL.md` (346 → 239L) — extracted entire `<anti_patterns>` section to `EXAMPLES.md`. Added "Shared Workspace" item to architecture_checklist before extraction (was only stated in the Sandbox Isolation Fix line). Other anti-patterns already had positive-rule equivalents in checklist or essential_principles.
+- `skills/autoresearch/SKILL.md` — added "Related rails" cross-link to `karpathy-principles` near the existing Karpathy attribution.
+- `README.md` — added `karpathy-principles` to the Skills section and a pointer to `references/skill-authoring-conventions.md` in Contributing.
+
+### Cross-plugin
+
+- `sdlc-plugin/skills/tdd/SKILL.md` — receives a parallel "why this skill exists" preamble naming Goal-Driven Execution (karpathy-principles principle 4). Tracked in the sdlc-plugin CHANGELOG; mentioned here only as the cross-plugin half of FR-4.
+
+### Rationale
+
+Three coordinated tracks: (a) publish one canonical principles skill in this plugin so future Claude Code sessions can load the four rails in ~70 lines instead of reading every workflow skill in full; (b) extract illustrative content from three sprawling SKILL.md files into sibling `EXAMPLES.md` files so the prompt loaded at invocation time stays scannable; (c) cross-link the new skill from `de-slop` and `tdd` (cross-plugin) so the procedural skills feel earned rather than imposed. Source: `research/research-karpathy-skills-learnings.md`. Plan: `plans/karpathy-skills-improvements.md`.
+
 ## [1.13.0] - 2026-04-18
 
 ### Changed
