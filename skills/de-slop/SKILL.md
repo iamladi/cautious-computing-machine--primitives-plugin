@@ -5,7 +5,16 @@ description: This skill should be used to remove AI-generated artifacts and unne
 
 # De-Slop Skill
 
+> **Why this skill exists.** This skill enforces *Simplicity First* —
+> [karpathy-principles](../karpathy-principles/SKILL.md), principle 2 —
+> applied after the fact. AI assistants tend to over-produce filler
+> comments, vague TODOs, and excessive docstrings; this skill removes
+> the overproduction before it ships.
+
 Remove AI-generated artifacts before committing or creating PRs. Uses `desloppify` for quantitative scoring and directed fixes when available; falls back to LLM-based pattern detection otherwise.
+
+> See [EXAMPLES.md](./EXAMPLES.md) for ❌/✅ code pairs illustrating each
+> scan category below.
 
 ## When to Use
 
@@ -131,48 +140,23 @@ Scan all changed files for these patterns. **DO NOT modify anything yet.**
 
 #### B. Redundant Comments
 
-Comments that just restate what the next line obviously does:
-
-**Python example:**
-```python
-# Create user  ← Redundant
-user = User()
-
-# Save to database  ← Redundant
-db.save(user)
-```
-
-**TypeScript example:**
-```typescript
-// Initialize the counter  ← Redundant
-const counter = 0;
-
-// Return the result  ← Redundant
-return result;
-```
+Comments that just restate what the next line obviously does.
 
 **Detection:**
 - Single-line comment immediately before code
 - Comment essentially restates the code
 - Adds no context, reasoning, or "why"
 
+See [EXAMPLES.md](./EXAMPLES.md#category-b--redundant-comments) for ❌/✅ pairs.
+
 #### C. AI TODO Comments
 
 Pattern: `# TODO: (Add|Consider|Might|Should|Could|May|Probably)`
 
-**Examples to flag:**
-```python
-# TODO: Add error handling
-# TODO: Consider edge cases
-# TODO: Might need optimization
-# TODO: Should validate input
-```
+Flag the vague, generated-as-filler form. Keep specific, actionable TODOs
+that reference a real follow-up (ticket, decision, or external dependency).
 
-**Keep these (specific/actionable):**
-```python
-# TODO: Handle timezone conversion for EU users (ticket #123)
-# TODO: Replace with new API endpoint after v2 launch
-```
+See [EXAMPLES.md](./EXAMPLES.md#category-c--ai-todo-comments) for ❌/✅ pairs.
 
 #### D. Excessive Docstrings
 
@@ -183,30 +167,7 @@ Flag docstrings that are excessively long for trivial functions.
 - Docstring has >3 lines
 - Docstring just restates what code obviously does
 
-**Bad example:**
-```python
-def get_name(self) -> str:
-    """Get the name property.
-
-    This method returns the name property of the object.
-    It retrieves the stored name value and returns it to the caller.
-    The name is a string representing the object's name.
-
-    Returns:
-        str: The name of the object
-    """
-    return self.name
-```
-
-**Good docstring (keep):**
-```python
-def parse_date(s: str, tz: str = "UTC") -> datetime:
-    """Parse date string with timezone handling.
-
-    Supports ISO 8601 and common formats. Falls back to UTC
-    if timezone parsing fails.
-    """
-```
+See [EXAMPLES.md](./EXAMPLES.md#category-d--excessive-docstrings) for ❌/✅ pairs.
 
 #### E. Mock-Heavy Tests
 

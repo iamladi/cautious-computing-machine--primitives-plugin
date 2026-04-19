@@ -9,6 +9,9 @@ Stop building features nobody needs. This skill helps you ship products that sol
 
 Feature creep kills products. It delays launches, burns budgets, exhausts teams, and creates software nobody wants to use. The most successful products do fewer things well.
 
+> See [EXAMPLES.md](./EXAMPLES.md) for the MVP Scope template, Scope
+> Decision Log table, and Daily AI Check template referenced below.
+
 ## The Core Problem
 
 Feature creep is the gradual accumulation of features beyond what your product needs to deliver value. It happens slowly, then all at once.
@@ -68,29 +71,7 @@ If you can't answer YES to questions 1-3 with evidence, do not build the feature
 
 Write down exactly what "done" means before you start. Document what you're NOT building. Reference this constantly.
 
-```markdown
-## MVP Scope Document Template
-
-### Core Problem
-[One sentence describing the user problem]
-
-### Success Criteria
-[How we know we've solved it]
-
-### In Scope (v1)
-- Feature A: [brief description]
-- Feature B: [brief description]
-
-### Explicitly Out of Scope
-- Feature X: Deferred to v2
-- Feature Y: Will not build unless [condition]
-- Feature Z: Not our problem to solve
-
-### Non-Negotiables
-- Ship by [date]
-- Budget: [hours/dollars]
-- Core user: [specific persona]
-```
+Use the [MVP Scope Document Template in EXAMPLES.md](./EXAMPLES.md#mvp-scope-document-template) — it covers Core Problem, Success Criteria, In Scope, Explicitly Out of Scope, and Non-Negotiables.
 
 **Rule 2: Use Version Control for Scope**
 
@@ -200,33 +181,14 @@ Before closing an AI coding session:
 - Did scope expand? Why?
 - What should we defer to the next session?
 
-**Daily AI Check:**
-At the end of each day working with AI assistants:
-```
-1. Features completed today: [list]
-2. Scope additions today: [list]  
-3. Was each addition validated? [yes/no]
-4. Tomorrow's focus: [single item]
-```
+**Daily AI Check:** at the end of each day working with AI assistants, run the [Daily AI Check Template in EXAMPLES.md](./EXAMPLES.md#daily-ai-check-template).
 
 **Sprint Planning Guard Rails:**
 - No new features mid-sprint without removing something
 - Capacity for bug fixes and debt paydown (20% minimum)
 - Clear definition of done for each item
 
-**Stakeholder Management:**
-Create a single source of truth for scope decisions:
-
-```markdown
-## Scope Decision Log
-
-| Date | Request | Source | Decision | Rationale | Trade-off |
-|------|---------|--------|----------|-----------|-----------|
-| 2025-01-15 | Add export to PDF | PM | Deferred v2 | Not core to MVP | Would delay launch 2 weeks |
-| 2025-01-16 | Dark mode | User feedback | Approved | User research shows demand | Removed social sharing |
-| 2025-01-17 | Add caching layer | Claude | Deferred | Premature optimization | Stay focused on core feature |
-| 2025-01-17 | Refactor to hooks | Cursor | Rejected | Works fine as is | Technical scope creep |
-```
+**Stakeholder Management:** create a single source of truth for scope decisions using the [Scope Decision Log table in EXAMPLES.md](./EXAMPLES.md#scope-decision-log) — log every request with source (including AI agents), decision, rationale, and trade-off.
 
 **Agents as Stakeholders:**
 AI coding agents are now stakeholders in your project. They have opinions. They make suggestions. Treat them like any other stakeholder:

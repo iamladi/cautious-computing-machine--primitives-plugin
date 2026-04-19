@@ -155,6 +155,16 @@ Worktree ready at .worktrees/feat/new-feature
 
 ## Skills
 
+### `karpathy-principles` - Coding-with-AI Rails
+
+Loads the four Karpathy coding-with-AI principles in one place — Think
+Before Coding, Simplicity First, Surgical Changes, Goal-Driven Execution
+— with pointers to the local skills that enforce each. Use when starting
+work in this workspace or when the user asks for "the rails" / "the
+principles". Paraphrased from
+[`multica-ai/andrej-karpathy-skills`](https://github.com/multica-ai/andrej-karpathy-skills)
+(MIT) — see `skills/karpathy-principles/ATTRIBUTION.md`.
+
 ### `ask-oracle` - GPT-5 Pro/5.1 Problem Solver
 
 Leverage the Oracle CLI to tap into GPT-5 Pro or GPT-5.1 for hard problems requiring deep reasoning and large codebase context.
@@ -262,6 +272,8 @@ Contributions welcome! This plugin follows these principles:
 3. **Project-aware** - Read project-specific docs (DEBUG.md, INSTALL.md, RUN.md, etc.)
 4. **Clear outputs** - Structured reports with actionable next steps
 5. **No destructive defaults** - Always verify before dangerous operations
+
+For new skills, see [`references/skill-authoring-conventions.md`](references/skill-authoring-conventions.md) — covers SKILL.md size, frontmatter, the `EXAMPLES.md` extraction convention, and the `❌/✅` pair format.
 
 ## Requirements
 
