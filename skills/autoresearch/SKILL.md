@@ -9,6 +9,8 @@ description: "Autonomously optimize any Claude Code skill by running it repeated
 
 Adapt Karpathy's autoresearch methodology (autonomous experimentation loops) to Claude Code skills. Instead of optimizing ML training code, optimize skill prompts: run the target skill repeatedly against a fixed eval suite, mutate the prompt one change at a time, keep what improves the score, discard what doesn't.
 
+Related rails: [karpathy-principles](../karpathy-principles/SKILL.md) collects the four Karpathy coding-with-AI principles this skill's methodology comes from.
+
 Most skills work ~70% of the time. The remaining 30% is usually a handful of recurring failure patterns that one targeted mutation can fix. The point of this skill is to find and apply those mutations empirically, not to rewrite the whole prompt from guesswork.
 
 ## Priorities

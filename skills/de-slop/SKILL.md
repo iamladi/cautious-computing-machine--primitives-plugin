@@ -5,6 +5,12 @@ description: This skill should be used to remove AI-generated artifacts and unne
 
 # De-Slop Skill
 
+> **Why this skill exists.** This skill enforces *Simplicity First* —
+> [karpathy-principles](../karpathy-principles/SKILL.md), principle 2 —
+> applied after the fact. AI assistants tend to over-produce filler
+> comments, vague TODOs, and excessive docstrings; this skill removes
+> the overproduction before it ships.
+
 Remove AI-generated artifacts before committing or creating PRs. Uses `desloppify` for quantitative scoring and directed fixes when available; falls back to LLM-based pattern detection otherwise.
 
 > See [EXAMPLES.md](./EXAMPLES.md) for ❌/✅ code pairs illustrating each
