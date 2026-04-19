@@ -5,6 +5,16 @@ All notable changes to the Primitives Plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.14.1] - 2026-04-19
+
+### Fixed
+- `skills/karpathy-principles/SKILL.md` — replaced cross-plugin `../../../sdlc-plugin/...` relative links with prose names (`the` `interview` `skill (sdlc-plugin)`, `the` `tdd` `skill (sdlc-plugin)`). The relative paths resolved correctly only in a sibling-checkout workspace; in production install layout (`~/.claude/plugins/cache/<marketplace>/<plugin>/<version>/`) plugins live in non-adjacent versioned directories and the links dangled. Convention doc already mandated prose-only cross-plugin references — the new skill now obeys its own rule. (Review finding: Codex P1 + Gemini P0, consensus.)
+- `skills/karpathy-principles/SKILL.md` frontmatter `description` — narrowed trigger surface. Dropped negative-phrasing exclusions ("Not for scope-creep triage (use avoid-feature-creep)…") flagged by Gemini as an LLM-routing anti-pattern (the skill name in a "Not for X" clause often *increases* selection probability). Dropped competing-skill keywords ("scope-creep", "stress-tests", "AI-artifact cleanup"). Trigger now keyed only on explicit "the rails" / "the principles" / "Karpathy principles" / "Karpathy guidelines" / "how should I work in this repo" requests. (Review finding: Gemini P1, contradicted by Codex but resolved in favor of tighter description.)
+- `skills/karpathy-principles/ATTRIBUTION.md` — hardened against upstream README mutation. Vendored the SPDX standard MIT license text in-band, added commit-pinned permalink to the upstream README declaration (`fb7a22c`, 2026-04-18), and added an in-body attribution line to `SKILL.md` so the artefact loaded at invocation time is self-attributing even if separated from `ATTRIBUTION.md`. (Review finding: Codex P2 + Gemini P3, consensus.)
+
+### Added
+- `skills/karpathy-principles/ROUTING-EVAL.md` — manual negative-routing test matrix (4 positive cases, 10 negative cases) called out in plan Phase 5 and surfaced as missing infrastructure by review (Gemini P2). The current `sdlc-plugin/eval/` framework is structural (file-content checks) and can't simulate LLM routing across a populated skill catalog, so cases ship as a markdown checklist for fresh-session manual runs until a routing-aware eval exists.
+
 ## [1.14.0] - 2026-04-19
 
 ### Added
